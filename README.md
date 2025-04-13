@@ -278,7 +278,7 @@ auto main() -> int {
 }
 ```
 
-Compile with: `g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5`
+Compile with: `g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -DMODLOG_STACKTRACE=1 -o app_demo5`
 
 Outputs are (using `bazel run //demo:demo5_stacktrace`):
 
