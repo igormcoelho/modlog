@@ -72,15 +72,6 @@ MOD_EXPORT class LogConfig {
 
 MOD_EXPORT inline LogConfig modlog_default;
 
-inline void InitLog(std::string_view app_name) {
-  // TODO: create temporary log files
-}
-
-inline void HaltLog() {
-  // flush last line!
-  *modlog_default.os << std::endl;
-}
-
 struct FatalStream : private std::streambuf, public std::ostream {
  private:
   std::stringstream buffer;
@@ -217,6 +208,20 @@ inline std::ostream& Log(
              : (lo->log().prefix ? prefix(lo->log().os, sev,
                                           location.file_name(), location.line())
                                  : *lo->log().os);
+}
+
+// ================================
+//    support for file logging
+// ================================
+
+inline void StartLogs(std::string_view app_name) {
+  // TODO: create temporary log files
+  Log(WARNING) << "WARNING: modlog does not currently support file logging!";
+}
+
+inline void StopLogs() {
+  // flush last line!
+  *modlog_default.os << std::endl;
 }
 
 // ================================

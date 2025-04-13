@@ -1,7 +1,7 @@
 #include <modlog/modlog_macros.hpp>
 
 auto main(int argc, char* argv[]) -> int {
-  modlog::InitLog(argv[0]);
+  modlog::StartLogs(argv[0]);
 
   Log(modlog::INFO) << "Hello World!";
   LOG(INFO) << "Hello World!";
@@ -13,7 +13,7 @@ auto main(int argc, char* argv[]) -> int {
 
   DLOG(INFO) << "Info on debug only... (does not appear with NDEBUG enabled)";
 
-  modlog::HaltLog();
+  modlog::StopLogs();
 
   return 0;
 }

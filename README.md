@@ -121,7 +121,7 @@ See [demo/demo3.cpp](./demo/demo3.cpp):
 #include <modlog/modlog_macros.hpp>
 
 auto main(int argc, char* argv[]) -> int {
-  modlog::InitLog(argv[0]);
+  modlog::StartLogs(argv[0]);
 
   Log(modlog::INFO) << "Hello World!";
   LOG(INFO) << "Hello World!";
@@ -133,7 +133,7 @@ auto main(int argc, char* argv[]) -> int {
 
   DLOG(INFO) << "Info on debug only... (does not appear with NDEBUG enabled)";
 
-  modlog::HaltLog();
+  modlog::StopLogs();
 
   return 0;
 }
@@ -142,10 +142,11 @@ auto main(int argc, char* argv[]) -> int {
 Outputs are (using `bazel run //demo:demo3` with `-DNDEBUG` in `.bazelrc`):
 
 ```
-I20250413 11:41:00.365185 136115799545664 demo3.cpp:6] Hello World!
-I20250413 11:41:00.365521 136115799545664 demo3.cpp:7] Hello World!
-E20250413 11:41:00.365595 136115799545664 demo3.cpp:8] Hello World! Again...
-I20250413 11:41:00.365660 136115799545664 demo3.cpp:11] Hello World! (this is INFO too)
+W20250413 14:34:34.161805 128168691296064 modlog.hpp:219] WARNING: modlog does not currently support file logging!
+I20250413 14:34:34.161932 128168691296064 demo3.cpp:6] Hello World!
+I20250413 14:34:34.161960 128168691296064 demo3.cpp:7] Hello World!
+E20250413 14:34:34.161991 128168691296064 demo3.cpp:8] Hello World! Again...
+I20250413 14:34:34.162023 128168691296064 demo3.cpp:11] Hello World! (this is INFO too)
 ```
 
 ## Demo 4 (C++20 without macros)
