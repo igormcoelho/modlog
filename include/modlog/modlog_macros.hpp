@@ -9,12 +9,12 @@
 // common macros for printing
 
 #define LOG(LEVEL) LOG_##LEVEL
-#define LOG_SILENT modlog::Log(modlog::SILENT, __FILE__, __LINE__)
-#define LOG_INFO modlog::Log(modlog::INFO, __FILE__, __LINE__)
-#define LOG_WARNING modlog::Log(modlog::WARNING, __FILE__, __LINE__)
-#define LOG_ERROR modlog::Log(modlog::ERROR, __FILE__, __LINE__)
-#define LOG_FATAL modlog::Log(modlog::FATAL, __FILE__, __LINE__)
-#define VLOG(VLEVEL) modlog::VLog(VLEVEL, __FILE__, __LINE__)
+#define LOG_SILENT modlog::Log(modlog::SILENT)
+#define LOG_INFO modlog::Log(modlog::INFO)
+#define LOG_WARNING modlog::Log(modlog::WARNING)
+#define LOG_ERROR modlog::Log(modlog::ERROR)
+#define LOG_FATAL modlog::Log(modlog::FATAL)
+#define VLOG(VLEVEL) modlog::VLog(VLEVEL)
 
 #ifndef NDEBUG
 #define DLOG(LEVEL) LOG(LEVEL)

@@ -8,7 +8,7 @@ It's lightweight, header-only or module-based, and requires no macros or depende
 
 ## What is `modlog`?
 
-Popular logging libraries like spdlog and nglog are very well structured, however they focus on pre-module (C++11 and C++14) standards and are unlikely to evolve quickly to C++23, so we propose a tiny log library called modlog, which is modular by design (without any macros) and has similar behavior to nglog.
+Popular logging libraries like spdlog and nglog are well-structured, however they focus on pre-module (C++11 and C++14) standards and are unlikely to evolve quickly to C++23, so we propose a tiny log library called modlog, which is modular by design (without any macros) and has similar behavior to nglog.
 
 The intention is to keep it very easy to use and easy to install, requiring a **single header** or a **single module unit**, without any extra dependencies. 
 
@@ -44,6 +44,7 @@ Log output indicates type `I|W|E|F`, then `yyyy-mm-dd`, then time, and finally t
 See [demo/demo1.cpp](./demo/demo1.cpp):
 
 ```.cpp
+
 #include <modlog/modlog.hpp>
 
 auto main() -> int {
@@ -52,7 +53,6 @@ auto main() -> int {
   Log(INFO) << "Hello World!";
   Log(ERROR) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(INFO, __FILE__, __LINE__) << "Hi with line number!";
   Log(SILENT) << "Hello World! (does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)";
@@ -66,11 +66,10 @@ Outputs are (using `bazel run //demo:demo1`):
 
 
 ```
-I20250413 00:22:10.666061 129311605270336] Hello World!
-E20250413 00:22:10.666212 129311605270336] Hello World! Again...
-I20250413 00:22:10.666246 129311605270336] Hello World! (this is INFO)
-I20250413 00:22:10.666276 129311605270336 demo1.cpp:10] Hi with line number!
-I20250413 00:22:10.666327 129311605270336] Hello World! (this is INFO too)
+I20250413 11:39:22.562022 129964449568576 demo1.cpp:7] Hello World!
+E20250413 11:39:22.562357 129964449568576 demo1.cpp:8] Hello World! Again...
+I20250413 11:39:22.562483 129964449568576 demo1.cpp:9] Hello World! (this is INFO)
+I20250413 11:39:22.562578 129964449568576 demo1.cpp:12] Hello World! (this is INFO too)
 ```
 
 ## Demo 2 (C++23 with `import std`)
@@ -89,7 +88,6 @@ auto main() -> int {
   Log(INFO) << "Hello World!";
   Log(ERROR) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(INFO, __FILE__, __LINE__) << "Hi with line number!";
   Log(SILENT) << "Hello World! (does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)";
@@ -102,16 +100,14 @@ auto main() -> int {
 Outputs are (using CMake 4.0 and a recent compiler, Clang 19 or GCC 15):
 
 ```
-I20250413 00:26:12.922017 130188225029952] Hello World!
-E20250413 00:26:12.922282 130188225029952] Hello World! Again...
-I20250413 00:26:12.922345 130188225029952] Hello World! (this is INFO)
-I20250413 00:26:12.922429 130188225029952 demo2.cpp:9] Hi with line number!
-I20250413 00:26:12.922504 130188225029952] Hello World! (this is INFO too)
+I20250413 11:40:21.760968 125558500837184 demo2.cpp:6] Hello World!
+E20250413 11:40:21.761265 125558500837184 demo2.cpp:7] Hello World! Again...
+I20250413 11:40:21.761336 125558500837184 demo2.cpp:8] Hello World! (this is INFO)
+I20250413 11:40:21.761433 125558500837184 demo2.cpp:11] Hello World! (this is INFO too)
 ```
 
 ## Demo 3 (C++20 with macros)
 
-Macros are not enabled by default, but can be helpful to automatically display line numbers.
 If you want to keep some popular macro log behavior from nglog, try `#include <modlog/modlog_macros.hpp>`!
 
 See [demo/demo3.cpp](./demo/demo3.cpp):
@@ -122,15 +118,13 @@ See [demo/demo3.cpp](./demo/demo3.cpp):
 auto main(int argc, char* argv[]) -> int {
   modlog::InitLog(argv[0]);
 
-  Log(modlog::INFO) << "Hello World (without line numbers)!";
-  Log(modlog::INFO, __FILE__, __LINE__) << "Hello World (with line numbers)!";
-  LOG(INFO) << "Hello World (with line numbers)!";
-  LOG(ERROR) << "Hello World (with line numbers)! Again...";
+  Log(modlog::INFO) << "Hello World!";
+  LOG(INFO) << "Hello World!";
+  LOG(ERROR) << "Hello World! Again...";
   // LOG() << "..."; // macro does not work without any severity level!
-  LOG(INFO) << "Hi with line number!";
 
-  VLOG(0) << "Hello World (with line numbers)! (this is INFO too)";
-  VLOG(1) << "Hello World (with line numbers)! (this does not appear...)";
+  VLOG(0) << "Hello World! (this is INFO too)";
+  VLOG(1) << "Hello World! (this does not appear...)";
 
   DLOG(INFO) << "Info on debug only... (does not appear with NDEBUG enabled)";
 
@@ -143,12 +137,10 @@ auto main(int argc, char* argv[]) -> int {
 Outputs are (using `bazel run //demo:demo3` with `-DNDEBUG` in `.bazelrc`):
 
 ```
-I20250413 00:33:44.108527 129891486598976] Hello World (without line numbers)!
-I20250413 00:33:44.108741 129891486598976 demo3.cpp:7] Hello World (with line numbers)!
-I20250413 00:33:44.108848 129891486598976 demo3.cpp:8] Hello World (with line numbers)!
-E20250413 00:33:44.108914 129891486598976 demo3.cpp:9] Hello World (with line numbers)! Again...
-I20250413 00:33:44.108978 129891486598976 demo3.cpp:11] Hi with line number!
-I20250413 00:33:44.109042 129891486598976 demo3.cpp:13] Hello World (with line numbers)! (this is INFO too)
+I20250413 11:41:00.365185 136115799545664 demo3.cpp:6] Hello World!
+I20250413 11:41:00.365521 136115799545664 demo3.cpp:7] Hello World!
+E20250413 11:41:00.365595 136115799545664 demo3.cpp:8] Hello World! Again...
+I20250413 11:41:00.365660 136115799545664 demo3.cpp:11] Hello World! (this is INFO too)
 ```
 
 ## Demo 4 (C++20 without macros)
@@ -224,16 +216,16 @@ Outputs are (using `bazel run //demo:demo4`):
 
 
 ```
-I20250413 00:43:50.826701 129527282526016] begin testing obj
-I20250413 00:43:50.826939 129527282526016] i=0 x=0
-I20250413 00:43:50.826999 129527282526016] i=1 x=0
-I20250413 00:43:50.827043 129527282526016] i=2 x=0
-W20250413 00:43:50.827085 129527282526016] finished loop!
-I20250413 00:43:50.827124 129527282526016] end testing obj
-I20250413 00:43:50.827190 129527282526016] begin testing obj2
-W20250413 00:43:50.827251 129527282526016] finished loop!
-I20250413 00:43:50.827301 129527282526016] end testing obj2
-I20250413 00:43:50.827384 129527282526016] json dump: {"i":0, "x":0}{"i":1, "x":0}{"i":2, "x":0}
+I20250413 11:44:37.812909 140207879132992 demo4.cpp:41] begin testing obj
+I20250413 11:44:37.813254 140207879132992 demo4.cpp:18] i=0 x=0
+I20250413 11:44:37.813365 140207879132992 demo4.cpp:18] i=1 x=0
+I20250413 11:44:37.813469 140207879132992 demo4.cpp:18] i=2 x=0
+W20250413 11:44:37.813528 140207879132992 demo4.cpp:19] finished loop!
+I20250413 11:44:37.813581 140207879132992 demo4.cpp:44] end testing obj
+I20250413 11:44:37.813651 140207879132992 demo4.cpp:45] begin testing obj2
+W20250413 11:44:37.813754 140207879132992 demo4.cpp:19] finished loop!
+I20250413 11:44:37.813843 140207879132992 demo4.cpp:49] end testing obj2
+I20250413 11:44:37.813952 140207879132992 demo4.cpp:56] json dump: {"i":0, "x":0}{"i":1, "x":0}{"i":2, "x":0}
 ```
 
 ## Future Work

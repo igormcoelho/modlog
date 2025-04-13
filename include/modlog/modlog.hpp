@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <format>
 #include <iostream>
+#include <source_location>
 #include <string>
 #include <thread>
 
@@ -131,27 +132,14 @@ concept Loggable = requires(Self obj) {
 // logs with global configuration
 // ==============================
 
-MOD_EXPORT inline std::ostream& Log() {
-  return (LogLevel::INFO < modlog_default.minlog)
-             ? modlog_default.no
-             : (modlog_default.prefix
-                    ? prefix(modlog_default.os, LogLevel::INFO)
-                    : *modlog_default.os);
-}
-
-MOD_EXPORT inline std::ostream& Log(LogLevel sev) {
-  return (sev < modlog_default.minlog)
-             ? modlog_default.no
-             : (modlog_default.prefix ? prefix(modlog_default.os, sev)
-                                      : *modlog_default.os);
-}
-
-MOD_EXPORT inline std::ostream& Log(LogLevel sev, std::string_view file,
-                                    int line) {
+MOD_EXPORT inline std::ostream& Log(
+    LogLevel sev = LogLevel::INFO,
+    const std::source_location location = std::source_location::current()) {
   return (sev < modlog_default.minlog)
              ? modlog_default.no
              : (modlog_default.prefix
-                    ? prefix(modlog_default.os, sev, file, line)
+                    ? prefix(modlog_default.os, sev, location.file_name(),
+                             location.line())
                     : *modlog_default.os);
 }
 
@@ -159,22 +147,15 @@ MOD_EXPORT inline std::ostream& Log(LogLevel sev, std::string_view file,
 // vlogs with global configuration
 // ===============================
 
-MOD_EXPORT inline std::ostream& VLog(int vlevel) {
+MOD_EXPORT inline std::ostream& VLog(
+    int vlevel,
+    const std::source_location location = std::source_location::current()) {
   return (LogLevel::INFO < modlog_default.minlog) ||
                  (vlevel > modlog_default.vlevel)
              ? modlog_default.no
              : (modlog_default.prefix
-                    ? prefix(modlog_default.os, LogLevel::INFO)
-                    : *modlog_default.os);
-}
-
-MOD_EXPORT inline std::ostream& VLog(int vlevel, std::string_view file,
-                                     int line) {
-  return (LogLevel::INFO < modlog_default.minlog) ||
-                 (vlevel > modlog_default.vlevel)
-             ? modlog_default.no
-             : (modlog_default.prefix
-                    ? prefix(modlog_default.os, LogLevel::INFO, file, line)
+                    ? prefix(modlog_default.os, LogLevel::INFO,
+                             location.file_name(), location.line())
                     : *modlog_default.os);
 }
 
@@ -183,26 +164,23 @@ MOD_EXPORT inline std::ostream& VLog(int vlevel, std::string_view file,
 // =======================================
 
 MOD_EXPORT template <Loggable LogObj>
-inline std::ostream& Log(LogObj* lo) {
+inline std::ostream& Log(LogObj* lo, const std::source_location location =
+                                         std::source_location::current()) {
   return (LogLevel::INFO < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::INFO)
+             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::INFO,
+                                          location.file_name(), location.line())
                                  : *lo->log().os);
 }
 
 MOD_EXPORT template <Loggable LogObj>
-inline std::ostream& Log(LogLevel sev, LogObj* lo) {
+inline std::ostream& Log(
+    LogLevel sev, LogObj* lo,
+    const std::source_location location = std::source_location::current()) {
   return (sev < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, sev) : *lo->log().os);
-}
-
-MOD_EXPORT template <Loggable LogObj>
-inline std::ostream& Log(LogLevel sev, LogObj* lo, std::string_view file,
-                         int line) {
-  return (sev < lo->log().minlog)
-             ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, lo->log(), file, line)
+             : (lo->log().prefix ? prefix(lo->log().os, sev,
+                                          location.file_name(), location.line())
                                  : *lo->log().os);
 }
 
