@@ -23,6 +23,12 @@ At this moment, the performance is not intended to be competitive with the popul
 - Supports verbosity levels and debug-only logs
 - Easily customizable streams and semantic tagging
 
+### Why C++20 and C++23?
+This project uses modern C++ features such as C++20 Concepts, `std::filesystem`, and `std::string_view`. These advances bring clarity, safety, and cleaner code.
+While it's technically possible to adapt the project to C++17, it would require removing or rewriting several modern features. Support for C++14 is not feasible due to the use of `inline` global variables.
+
+So, it's time to advance to C++20, at least, and get its benefits; and *even better* with C++23 with CXX Modules and `import std`.
+
 ## How to use it?
 
 With C++20 enabled, simply **copy** [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
