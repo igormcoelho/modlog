@@ -23,6 +23,11 @@ At this moment, the performance is not intended to be competitive with the popul
 - Supports verbosity levels and debug-only logs
 - Easily customizable streams and semantic tagging
 
+### Simple Installation
+- C++20: Copy [modlog.hpp](./include/modlog/modlog.hpp) into your project and `#include` it.
+- C++23 with CXX Modules: Use CMake 4.0 or Bazel with module support (see below)
+   * tested on GCC 15 and Clang 19 (not tested on MSVC!)
+
 ### Why C++20 and C++23?
 This project uses modern C++ features such as C++20 Concepts, `std::filesystem`, `std::string_view`, `std::source_location` and `std::stacktrace`. These advances bring clarity, safety, and cleaner code.
 While it's technically possible to adapt the project to C++17, it would require removing or rewriting several modern features. Support for C++14 is not feasible due to the use of `inline` global variables.
@@ -31,7 +36,7 @@ So, it's time to advance to C++20, at least, and get its benefits; and *even bet
 
 ## How to use it?
 
-With C++20 enabled, simply **copy** [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
+With C++20 enabled, just copy [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
 
 With C++23, use CMake 4.0 to build the project with `import std` support, targetting this git repo.
 
