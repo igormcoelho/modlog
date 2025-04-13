@@ -10,6 +10,13 @@ cc_binary(
     deps = ["//include:modlog"],
 )
 
+cc_binary(
+    name = "demo1_windows",
+    srcs = ["demo1.cpp"],
+    copts = ["/std:c++20"],
+    deps = ["//include:modlog"],
+)
+
 # only with 'import std' support!
 #cc_binary(
 #    name = "demo2",

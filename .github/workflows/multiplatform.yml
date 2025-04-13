@@ -51,6 +51,11 @@ jobs:
       shell: bash
       run: |
         bazel run //demo:demo1
+    - name: demo-project1 (bazel windows)
+      if: contains(matrix.os, 'windows')
+      shell: cmd
+      run: |
+        bazel run //demo:demo1_windows
     - name: demo-project3 (bazel ubuntu)
       if: contains(matrix.os, 'ubuntu')
       shell: bash

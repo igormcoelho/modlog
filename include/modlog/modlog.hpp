@@ -6,8 +6,12 @@
 
 //
 #ifndef MODLOG_USE_CXX_MODULES
+#ifndef _WIN32
 #include <pthread.h>
 #include <unistd.h>
+#else
+#include <windows.h>
+#endif
 
 #include <chrono>
 #include <ctime>
@@ -30,6 +34,14 @@
 #endif
 
 namespace modlog {
+
+inline uintptr_t get_tid() {
+#ifdef _WIN32
+  return static_cast<uintptr_t>(::GetCurrentThreadId());
+#else
+  return reinterpret_cast<uintptr_t>(pthread_self());
+#endif
+}
 
 // =======================================
 //     nullable ostream  ("/dev/null")
@@ -128,7 +140,7 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
   auto now_time_t = system_clock::to_time_t(now);
   auto now_tm = *std::localtime(&now_time_t);
   auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
-  auto tid = reinterpret_cast<uintptr_t>(pthread_self());
+  auto tid = get_tid();
 
   // add line break before, since we cannot control what's done after...
   *os << std::endl;
