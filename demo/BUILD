@@ -13,7 +13,7 @@ cc_binary(
 cc_binary(
     name = "demo1_windows",
     srcs = ["demo1.cpp"],
-    copts = ["/std:c++23preview"],
+    copts = ["/std:c++latest"],
     deps = ["//include:modlog"],
 )
 
