@@ -15,11 +15,9 @@ project(example_project VERSION 0.1.0 LANGUAGES CXX)
 
 Include(FetchContent)
 
-FetchContent_Declare(modlog GIT_REPOSITORY https://github.com/igormcoelho/modlog.git GIT_TAG c481efe76d8cb372351c0ee9af863b7e016c59e8)
+FetchContent_Declare(modlog GIT_REPOSITORY https://github.com/igormcoelho/modlog.git GIT_TAG 24ab413acc97ecca2e02cd93b403493f4df8b993)
 FetchContent_MakeAvailable(modlog)
 
 add_executable(modlog1 main.cpp)
 target_link_libraries(modlog1 PRIVATE modlog_module)
-
-
 
