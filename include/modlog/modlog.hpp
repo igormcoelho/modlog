@@ -35,12 +35,6 @@
 
 namespace modlog {
 
-MODLOG_MOD_EXPORT enum JustTestWindows {
-  EnumNumber1,
-  EnumNumber2,
-  EnumNumber3
-};
-
 inline uintptr_t get_tid() {
 #ifdef _WIN32
   return static_cast<uintptr_t>(::GetCurrentThreadId());
@@ -266,7 +260,8 @@ inline std::ostream& Log(
 
 inline void StartLogs(std::string_view app_name) {
   // TODO: create temporary log files
-  Log(WARNING) << "WARNING: modlog does not currently support file logging!";
+  Log(LogLevel::Warning)
+      << "WARNING: modlog does not currently support file logging!";
 }
 
 inline void StopLogs() {
