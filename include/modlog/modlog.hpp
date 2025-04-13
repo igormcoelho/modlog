@@ -87,11 +87,11 @@ MODLOG_MOD_EXPORT constexpr LogLevel FATAL = LogLevel::FATAL;
 
 MODLOG_MOD_EXPORT enum LogLevel1 {
   //
-  Silent,
-  Info,
-  Warning,
-  Error,
-  Fatal
+  Silent = -1,
+  Info = 0,
+  Warning = 1,
+  Error = 2,
+  Fatal = 3
 };
 
 MODLOG_MOD_EXPORT enum LogLevel {
