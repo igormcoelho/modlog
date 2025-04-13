@@ -17,6 +17,8 @@ class Obj {
     int y = 3;
     for (int i = 0; i < y; i++) Log(INFO, this) << "i=" << i << " x=" << x;
     Log(WARNING, this) << "finished loop!";
+    VLog(0) << "hi_0";
+    VLog(1) << "hi_1";
   }
 };
 
