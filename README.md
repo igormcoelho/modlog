@@ -228,6 +228,82 @@ I20250413 11:44:37.813843 140207879132992 demo4.cpp:49] end testing obj2
 I20250413 11:44:37.813952 140207879132992 demo4.cpp:56] json dump: {"i":0, "x":0}{"i":1, "x":0}{"i":2, "x":0}
 ```
 
+## Demo 5 (C++23 with Stacktrace - GCC-15 only with `-lstdc++exp`)
+
+Support for FATAL is only currently possible in GCC with C++23 and `-lstdc++exp` (not working on Clang).
+To demonstrate how this feature works, see demo5 recursive fibonaccy function breaking after few iterations:
+
+```.cpp
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2025 - modlog library - https://github.com/igormcoelho/modlog
+
+// Stacktrace from C++23 is required for FATAL.
+// Only tested on g++-15 with -lstdc++exp
+// $ g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5
+
+#define MODLOG_STACKTRACE 1
+#include <modlog/modlog.hpp>
+
+using namespace modlog;
+
+int fib(int n) {
+  Log() << "fib(n=" << n << ")";
+  if (n <= 1)
+    return 1;
+  else if (n <= 4) {
+    Log(FATAL) << "n<=4 (" << n << ")" << std::endl;
+    return -1;
+  } else
+    return fib(n - 1) + fib(n - 2);
+}
+
+void myfunc(int n) { Log(FATAL) << "n=" << n << "" << std::endl; }
+
+auto main() -> int {
+  using namespace modlog;
+
+  Log(INFO) << "Hello World!";
+
+  // recursive fatal stacktrace
+  fib(8);
+  // direct fatal stacktrace
+  myfunc(3);
+
+  return 0;
+}
+```
+
+Compile with: `g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5`
+
+Outputs are (using `bazel run //demo:demo5`):
+
+```
+I20250413 12:50:56.754815 133389385525056 demo5.cpp:29] Hello World!
+I20250413 12:50:56.755067 133389385525056 demo5.cpp:14] fib(n=8)
+I20250413 12:50:56.755149 133389385525056 demo5.cpp:14] fib(n=7)
+I20250413 12:50:56.755224 133389385525056 demo5.cpp:14] fib(n=6)
+I20250413 12:50:56.755295 133389385525056 demo5.cpp:14] fib(n=5)
+I20250413 12:50:56.755384 133389385525056 demo5.cpp:14] fib(n=4)
+F20250413 12:50:56.755496 133389385525056 demo5.cpp:18] n<=4 (4)
+
+   0# modlog::FatalStream::kill() at include/modlog/modlog.hpp:103
+   1# modlog::FatalStream::overflow(int) at include/modlog/modlog.hpp:97
+   2# std::ostream::put(char) at :0
+   3# std::basic_ostream<char, std::char_traits<char> >& std::endl<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&) at :0
+   4# fib(int) at demo/demo5.cpp:18
+   5# fib(int) at demo/demo5.cpp:21
+   6# fib(int) at demo/demo5.cpp:21
+   7# fib(int) at demo/demo5.cpp:21
+   8# fib(int) at demo/demo5.cpp:21
+   9# main at demo/demo5.cpp:32
+  10# __libc_start_call_main at ../sysdeps/nptl/libc_start_call_main.h:58
+  11# __libc_start_main_impl at ../csu/libc-start.c:360
+  12# _start at :0
+  13# 
+
+terminate called without an active exception
+```
+
 ## Future Work
 
 This project is experimental, targetting C++20 and C++23 standards, so bugs may exist!

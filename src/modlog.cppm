@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2025 - modlog library - https://github.com/igormcoelho/modlog
+
 module;
 #include <pthread.h>
 #include <stdint.h>

@@ -29,3 +29,11 @@ cc_binary(
     copts = ["-DNDEBUG"],
     deps = ["//include:modlog"],
 )
+
+cc_binary(
+    name = "demo5",
+    srcs = ["demo5.cpp"],
+    copts = ["-g", "-std=c++23"],
+    linkopts = ["-lstdc++exp "],
+    deps = ["//include:modlog"],
+)

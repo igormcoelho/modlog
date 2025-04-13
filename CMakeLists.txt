@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 4.0.0)
-# set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
-set(CMAKE_CXX_COMPILER /usr/bin/clang++-19)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
+set(MODLOG_GCC ON)
+#set(CMAKE_CXX_COMPILER /usr/bin/clang++-19)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -35,4 +36,9 @@ target_link_libraries(demo3 PRIVATE modlog)
 add_executable(demo4 demo/demo4.cpp)
 target_link_libraries(demo4 PRIVATE modlog)
 
+if(MODLOG_GCC)
+add_executable(demo5 demo/demo5.cpp)
+target_link_libraries(demo5 PRIVATE modlog)
+target_link_libraries(demo5 PRIVATE -lstdc++exp)
+endif()
 

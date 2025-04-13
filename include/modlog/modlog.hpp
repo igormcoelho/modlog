@@ -18,6 +18,12 @@
 #include <string>
 #include <thread>
 
+#ifdef MODLOG_STACKTRACE
+#if __has_include(<stacktrace>)
+#include <stacktrace>
+#endif
+#endif
+
 #define MOD_EXPORT
 #else
 #define MOD_EXPORT export
@@ -50,7 +56,9 @@ MOD_EXPORT enum LogLevel {
   INFO = 0,
   WARNING = 1,
   ERROR = 2,
+#if __cplusplus >= 202302L
   FATAL = 3
+#endif
 };
 
 MOD_EXPORT class LogConfig {
@@ -75,6 +83,31 @@ inline void HaltLog() {
   *modlog_default.os << std::endl;
 }
 
+#if MODLOG_STACKTRACE && defined(__cpp_lib_stacktrace)
+struct FatalStream : private std::streambuf, public std::ostream {
+ private:
+  std::stringstream buffer;
+
+ public:
+  explicit FatalStream() : std::ostream{this} {}
+
+ private:
+  int overflow(int c) override {
+    buffer.put((char)c);
+    if (c == '\n') kill();
+    return c;
+  }
+
+  void kill() {
+    std::cerr << buffer.str() << std::endl;
+    std::cerr << std::stacktrace::current() << std::endl;
+    std::terminate();
+  }
+};
+
+inline FatalStream fatal;
+#endif
+
 // =======================================
 //         helper prefix function
 // =======================================
@@ -93,8 +126,10 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
     level = 'W';
   else if (l == LogLevel::ERROR)
     level = 'E';
+#if MODLOG_STACKTRACE && defined(__cpp_lib_stacktrace)
   else if (l == LogLevel::FATAL)
     level = 'F';
+#endif
 
   using namespace std::chrono;  // NOLINT
 
@@ -116,6 +151,16 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
   else
     *os << std::format("] ");
 
+  /*
+if (level == 'F') {
+  std::cout << "enabling stacktrace1!!" << std::endl;
+  exit(1);
+}
+*/
+
+#if MODLOG_STACKTRACE && defined(__cpp_lib_stacktrace)
+  return (level == 'F') ? fatal : *os;
+#endif
   return *os;
 }
 

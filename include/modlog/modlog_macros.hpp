@@ -13,7 +13,9 @@
 #define LOG_INFO modlog::Log(modlog::INFO)
 #define LOG_WARNING modlog::Log(modlog::WARNING)
 #define LOG_ERROR modlog::Log(modlog::ERROR)
+#if MODLOG_STACKTRACE && defined(__cpp_lib_stacktrace)
 #define LOG_FATAL modlog::Log(modlog::FATAL)
+#endif
 #define VLOG(VLEVEL) modlog::VLog(VLEVEL)
 
 #ifndef NDEBUG
