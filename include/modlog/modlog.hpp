@@ -35,6 +35,12 @@
 
 namespace modlog {
 
+MODLOG_MOD_EXPORT enum JustTestWindows {
+  EnumNumber1,
+  EnumNumber2,
+  EnumNumber3
+};
+
 inline uintptr_t get_tid() {
 #ifdef _WIN32
   return static_cast<uintptr_t>(::GetCurrentThreadId());
