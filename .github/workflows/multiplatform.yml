@@ -55,7 +55,7 @@ jobs:
       if: contains(matrix.os, 'windows')
       shell: bash
       run: |
-        bazel run //demo:demo1
+        bazel run "//demo:demo1"
     - name: demo-project3 (bazel all)
       shell: bash
       run: |
