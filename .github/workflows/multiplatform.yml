@@ -1,0 +1,82 @@
+name: Demo on windows, linux and macos
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release]
+      
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Install ninja-build, bazelisk and local dependencies (Ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get install ninja-build -y
+        python3 -m pip install -r requirements.txt
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+        bash -i -c "nvm install --lts"
+        bash -i -c "sudo npm install -g @bazel/bazelisk"
+        bash -i -c "sudo apt install clang-19 clang-tools-19 libc++-19-dev"
+    - name: Install ninja-build, bazel and local dependencies (macos)
+      if: contains(matrix.os, 'macos')
+      run: |
+        brew install ninja
+        brew install bazelisk
+        python3 -m pip install -r requirements.txt --break-system-packages
+    - name: Install bazel and local dependencies (windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        choco install bazel
+        python3 -m pip install -r requirements.txt
+    - name: Install cmake with pipx (All)
+      run: |
+        pipx install cmake
+    - name: demo-project1 (bazel ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        bazel run //demo:demo1
+    - name: demo-project1 (bazel macos)
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        bazel run //demo:demo1
+    - name: demo-project1 (bazel windows)
+      if: contains(matrix.os, 'windows')
+      shell: bash
+      run: |
+        bazel run //demo:demo1
+    - name: demo-projects (cmake)
+      shell: bash
+      run: |
+        mkdir -p build && cd build && cmake .. -GNinja && ninja
+    - name: demo-project2 (bazel all)
+      shell: bash
+      run: |
+        bazel run //demo:demo2
+    - name: demo-project3 (bazel all)
+      shell: bash
+      run: |
+        bazel run //demo:demo3
+    - name: demo-project4 (bazel all)
+      shell: bash
+      run: |
+        bazel run //demo:demo4
+    - name: demo-project5 (bazel all)
+      shell: bash
+      run: |
+        bazel run //demo:demo5
+        
