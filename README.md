@@ -1,5 +1,8 @@
 # modlog
 
+[![Tested on Windows, Linux and MacOS](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml/badge.svg)](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml)
+
+
 **modlog** is a modern, modular logging library for C++20 and C++23.  
 It's lightweight, header-only or module-based, and requires no macros or dependencies.
 
