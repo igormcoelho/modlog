@@ -1,0 +1,5 @@
+#
+build --action_env=CC=/usr/bin/g++-15
+build --action_env=CXX=/usr/bin/g++-15
+#
+build --cxxopt='-std=c++20'

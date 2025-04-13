@@ -1,0 +1,243 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2025 - modlog library - https://github.com/igormcoelho/modlog
+
+#ifndef MODLOG_MODLOG_HPP
+#define MODLOG_MODLOG_HPP
+
+//
+#ifndef MODLOG_USE_CXX_MODULES
+#include <pthread.h>
+#include <unistd.h>
+
+#include <chrono>
+#include <ctime>
+#include <filesystem>
+#include <format>
+#include <iostream>
+#include <string>
+#include <thread>
+
+#define MOD_EXPORT
+#else
+#define MOD_EXPORT export
+#endif
+
+namespace modlog {
+
+// =======================================
+//     nullable ostream  ("/dev/null")
+// =======================================
+
+struct NullBuffer : std::streambuf {
+  // accepts and ignores char 'c'
+  int overflow(int c) override { return c; }
+};
+
+struct NullOStream : std::ostream {
+  NullOStream() : std::ostream{&nb} {}
+
+ private:
+  NullBuffer nb;
+};
+
+// =======================================
+//      log levels and default config
+// =======================================
+
+MOD_EXPORT enum LogLevel {
+  SILENT = -1,
+  INFO = 0,
+  WARNING = 1,
+  ERROR = 2,
+  FATAL = 3
+};
+
+MOD_EXPORT class LogConfig {
+ public:
+  std::ostream* os{&std::cerr};
+  // OBS: could host a unique_ptr here, if necessary for thirdparty streams
+  // OBS 2: not necessary for the moment... if you need it, just let us know!
+  LogLevel minlog{LogLevel::INFO};
+  int vlevel{0};
+  bool prefix{true};
+  NullOStream no;
+};
+
+MOD_EXPORT inline LogConfig modlog_default;
+
+inline void InitLog(std::string_view app_name) {
+  // TODO: create temporary log files
+}
+
+inline void HaltLog() {
+  // flush last line!
+  *modlog_default.os << std::endl;
+}
+
+// =======================================
+//         helper prefix function
+// =======================================
+
+inline std::string shortname(std::string_view path) {
+  return std::filesystem::path(path).filename().string();
+}
+
+inline std::ostream& prefix(std::ostream* os, LogLevel l,
+                            std::string_view file = "", int line = -1) {
+  // TODO: check if locking is required for multi-threaded setups...
+  char level = '?';
+  if (l == LogLevel::INFO)
+    level = 'I';
+  else if (l == LogLevel::WARNING)
+    level = 'W';
+  else if (l == LogLevel::ERROR)
+    level = 'E';
+  else if (l == LogLevel::FATAL)
+    level = 'F';
+
+  using namespace std::chrono;  // NOLINT
+
+  auto now = system_clock::now();
+  auto now_time_t = system_clock::to_time_t(now);
+  auto now_tm = *std::localtime(&now_time_t);
+  auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
+  auto tid = reinterpret_cast<uintptr_t>(pthread_self());
+
+  // add line break before, since we cannot control what's done after...
+  *os << std::endl;
+  *os << std::format("{}{:04}{:02}{:02} {:02}:{:02}:{:02}.{:06} {:}", level,
+                     now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday,
+                     now_tm.tm_hour, now_tm.tm_min, now_tm.tm_sec, us.count(),
+                     tid);
+
+  if (file != "")
+    *os << std::format(" {}:{}] ", shortname(file), line);
+  else
+    *os << std::format("] ");
+
+  return *os;
+}
+
+template <typename Self>
+concept Loggable = requires(Self obj) {
+  { obj.stream() } -> std::same_as<std::ostream&>;
+  { obj.log() } -> std::same_as<LogLevel>;
+  { obj.prefix() } -> std::same_as<bool>;
+} || requires(Self obj) {
+  { obj.log() } -> std::same_as<LogConfig>;
+};
+
+// ==============================
+// logs with global configuration
+// ==============================
+
+MOD_EXPORT inline std::ostream& Log() {
+  return (LogLevel::INFO < modlog_default.minlog)
+             ? modlog_default.no
+             : (modlog_default.prefix
+                    ? prefix(modlog_default.os, LogLevel::INFO)
+                    : *modlog_default.os);
+}
+
+MOD_EXPORT inline std::ostream& Log(LogLevel sev) {
+  return (sev < modlog_default.minlog)
+             ? modlog_default.no
+             : (modlog_default.prefix ? prefix(modlog_default.os, sev)
+                                      : *modlog_default.os);
+}
+
+MOD_EXPORT inline std::ostream& Log(LogLevel sev, std::string_view file,
+                                    int line) {
+  return (sev < modlog_default.minlog)
+             ? modlog_default.no
+             : (modlog_default.prefix
+                    ? prefix(modlog_default.os, sev, file, line)
+                    : *modlog_default.os);
+}
+
+// ===============================
+// vlogs with global configuration
+// ===============================
+
+MOD_EXPORT inline std::ostream& VLog(int vlevel) {
+  return (LogLevel::INFO < modlog_default.minlog) ||
+                 (vlevel > modlog_default.vlevel)
+             ? modlog_default.no
+             : (modlog_default.prefix
+                    ? prefix(modlog_default.os, LogLevel::INFO)
+                    : *modlog_default.os);
+}
+
+MOD_EXPORT inline std::ostream& VLog(int vlevel, std::string_view file,
+                                     int line) {
+  return (LogLevel::INFO < modlog_default.minlog) ||
+                 (vlevel > modlog_default.vlevel)
+             ? modlog_default.no
+             : (modlog_default.prefix
+                    ? prefix(modlog_default.os, LogLevel::INFO, file, line)
+                    : *modlog_default.os);
+}
+
+// =======================================
+// logs with object-specific configuration
+// =======================================
+
+MOD_EXPORT template <Loggable LogObj>
+inline std::ostream& Log(LogObj* lo) {
+  return (LogLevel::INFO < lo->log().minlog)
+             ? modlog_default.no
+             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::INFO)
+                                 : *lo->log().os);
+}
+
+MOD_EXPORT template <Loggable LogObj>
+inline std::ostream& Log(LogLevel sev, LogObj* lo) {
+  return (sev < lo->log().minlog)
+             ? modlog_default.no
+             : (lo->log().prefix ? prefix(lo->log().os, sev) : *lo->log().os);
+}
+
+MOD_EXPORT template <Loggable LogObj>
+inline std::ostream& Log(LogLevel sev, LogObj* lo, std::string_view file,
+                         int line) {
+  return (sev < lo->log().minlog)
+             ? modlog_default.no
+             : (lo->log().prefix ? prefix(lo->log().os, lo->log(), file, line)
+                                 : *lo->log().os);
+}
+
+// ================================
+//     semantic stream - utils
+// ================================
+
+struct SemStream : private std::streambuf, public std::ostream {
+ private:
+  std::stringstream oss;
+
+ public:
+  std::ostream* os;
+
+  explicit SemStream(std::ostream& _os) : std::ostream{this}, os{&_os} {}
+
+  SemStream() : std::ostream{this}, os{&oss} {}
+
+ private:
+  int overflow(int c) override {
+    (*os).put(c);
+    return 0;
+  }
+
+ public:
+  void setStream(std::ostream& _os) { os = &_os; }
+
+  std::string dump() {
+    std::string dump{oss.str()};
+    oss.str(std::string{});
+    os->clear();
+    return dump;
+  }
+};
+
+}  // namespace modlog
+
+#endif

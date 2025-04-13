@@ -1,0 +1,21 @@
+module(name = "modlog")
+
+# bazel_dep(name = "bazel_skylib", version = "1.4.2")
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    #commit = "daae6f40adfa5fdb7c89684cbe4d88b691c63b2d", # 15/11/2023
+    commit = "0e990032f3c5a866e72615cf67e5ce22186dcb97",  # 01/02/2025
+)
+# RUN: bazel run @hedron_compile_commands//:refresh_all
+bazel_dep(name = "aspect_bazel_lib", version = "1.34.5")
+#
+
+# experimental for clang tidy
+bazel_dep(name = "bazel_clang_tidy", dev_dependency = True)
+git_override(
+       module_name = "bazel_clang_tidy",
+       commit = "bff5c59c843221b05ef0e37cef089ecc9d24e7da",
+       remote = "https://github.com/erenon/bazel_clang_tidy.git",
+)
