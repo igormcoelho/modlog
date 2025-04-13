@@ -10,6 +10,7 @@
 #include <modlog/modlog.hpp>
 
 using namespace modlog;
+using modlog::LogLevel;
 
 int fib(int n) {
   Log() << "fib(n=" << n << ")";

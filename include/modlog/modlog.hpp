@@ -63,13 +63,19 @@ struct NullOStream : std::ostream {
 //      log levels and default config
 // =======================================
 
-MOD_EXPORT enum LogLevel {
+MOD_EXPORT enum class LogLevel : int {
   SILENT = -1,
   INFO = 0,
   WARNING = 1,
   ERROR = 2,
   FATAL = 3
 };
+
+MOD_EXPORT constexpr LogLevel SILENT = LogLevel::SILENT;
+MOD_EXPORT constexpr LogLevel INFO = LogLevel::INFO;
+MOD_EXPORT constexpr LogLevel WARNING = LogLevel::WARNING;
+MOD_EXPORT constexpr LogLevel ERROR = LogLevel::ERROR;
+MOD_EXPORT constexpr LogLevel FATAL = LogLevel::FATAL;
 
 MOD_EXPORT class LogConfig {
  public:
