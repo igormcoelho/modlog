@@ -36,9 +36,16 @@ target_link_libraries(demo3 PRIVATE modlog)
 add_executable(demo4 demo/demo4.cpp)
 target_link_libraries(demo4 PRIVATE modlog)
 
-if(MODLOG_GCC)
 add_executable(demo5 demo/demo5.cpp)
 target_link_libraries(demo5 PRIVATE modlog)
-target_link_libraries(demo5 PRIVATE -lstdc++exp)
+
+if(MODLOG_GCC)
+#add_definitions(-DMODLOG_STACKTRACE=1)
+add_executable(demo5_stacktrace demo/demo5.cpp)
+target_link_libraries(demo5_stacktrace PRIVATE modlog)
+target_link_libraries(demo5_stacktrace PRIVATE -lstdc++exp)
+target_compile_definitions(demo5_stacktrace PUBLIC -DMODLOG_STACKTRACE=1)
 endif()
+
+
 

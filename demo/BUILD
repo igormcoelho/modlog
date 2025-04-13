@@ -31,9 +31,16 @@ cc_binary(
 )
 
 cc_binary(
+    name = "demo5_stacktrace",
+    srcs = ["demo5.cpp"],
+    copts = ["-g", "-std=c++23", "-DMODLOG_STACKTRACE=1"],
+    linkopts = ["-lstdc++exp "],
+    deps = ["//include:modlog"],
+)
+
+cc_binary(
     name = "demo5",
     srcs = ["demo5.cpp"],
-    copts = ["-g", "-std=c++23"],
-    linkopts = ["-lstdc++exp "],
+    copts = ["-g", "-std=c++23", "-DMODLOG_STACKTRACE=0"],
     deps = ["//include:modlog"],
 )

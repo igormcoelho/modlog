@@ -5,7 +5,7 @@
 // Only tested on g++-15 with -lstdc++exp
 // $ g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5
 
-#define MODLOG_STACKTRACE 1
+// #define MODLOG_STACKTRACE 1
 #include <modlog/modlog.hpp>
 
 using namespace modlog;

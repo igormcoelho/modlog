@@ -241,7 +241,7 @@ To demonstrate how this feature works, see demo5 recursive fibonaccy function br
 // Only tested on g++-15 with -lstdc++exp
 // $ g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5
 
-#define MODLOG_STACKTRACE 1
+// #define MODLOG_STACKTRACE 1
 #include <modlog/modlog.hpp>
 
 using namespace modlog;
@@ -275,7 +275,7 @@ auto main() -> int {
 
 Compile with: `g++-15 --std=c++23 demo/demo5.cpp -Iinclude/ -lstdc++exp -g -o app_demo5`
 
-Outputs are (using `bazel run //demo:demo5`):
+Outputs are (using `bazel run //demo:demo5_stacktrace`):
 
 ```
 I20250413 12:50:56.754815 133389385525056 demo5.cpp:29] Hello World!
@@ -301,6 +301,21 @@ F20250413 12:50:56.755496 133389385525056 demo5.cpp:18] n<=4 (4)
   12# _start at :0
   13# 
 
+terminate called without an active exception
+```
+
+If stacktrace is unavailable, message will be (`bazel run //demo:demo5`):
+
+```
+I20250413 13:33:37.177322 138698814760768 demo5.cpp:29] Hello World!
+I20250413 13:33:37.177606 138698814760768 demo5.cpp:14] fib(n=8)
+I20250413 13:33:37.177687 138698814760768 demo5.cpp:14] fib(n=7)
+I20250413 13:33:37.177754 138698814760768 demo5.cpp:14] fib(n=6)
+I20250413 13:33:37.177825 138698814760768 demo5.cpp:14] fib(n=5)
+I20250413 13:33:37.177895 138698814760768 demo5.cpp:14] fib(n=4)
+F20250413 13:33:37.177965 138698814760768 demo5.cpp:18] n<=4 (4)
+
+WARNING: stacktrace unavailable, must #include <stacktrace> and -lstdc++exp
 terminate called without an active exception
 ```
 
