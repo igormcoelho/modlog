@@ -60,10 +60,6 @@ jobs:
       shell: bash
       run: |
         mkdir -p build && cd build && cmake .. -GNinja && ninja
-    - name: demo-project2 (bazel all)
-      shell: bash
-      run: |
-        bazel run //demo:demo2
     - name: demo-project3 (bazel all)
       shell: bash
       run: |

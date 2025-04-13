@@ -6,6 +6,7 @@ package(
 cc_binary(
     name = "demo1",
     srcs = ["demo1.cpp"],
+    copts = ["-DNDEBUG", "-std=c++20"],
     deps = ["//include:modlog"],
 )
 
@@ -19,14 +20,14 @@ cc_binary(
 cc_binary(
     name = "demo3",
     srcs = ["demo3.cpp"],
-    copts = ["-DNDEBUG"],
+    copts = ["-DNDEBUG", "-std=c++20"],
     deps = ["//include:modlog"],
 )
 
 cc_binary(
     name = "demo4",
     srcs = ["demo4.cpp"],
-    copts = ["-DNDEBUG"],
+    copts = ["-DNDEBUG", "-std=c++20"],
     deps = ["//include:modlog"],
 )
 
