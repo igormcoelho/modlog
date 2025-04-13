@@ -236,7 +236,7 @@ I20250413 11:44:37.813952 140207879132992 demo4.cpp:56] json dump: {"i":0, "x":0
 ## Demo 5 (C++23 with Stacktrace - GCC-15 only with `-lstdc++exp`)
 
 Support for FATAL is only currently possible in GCC with C++23 and `-lstdc++exp` (not working on Clang, see [Compiler Support for C++23](https://en.cppreference.com/w/cpp/compiler_support/23)).
-To demonstrate how this feature works, see demo5 recursive fibonaccy function breaking after few iterations:
+To demonstrate how this feature works, see demo5 recursive fibonacci function breaking after few iterations:
 
 ```.cpp
 // SPDX-License-Identifier: MIT
