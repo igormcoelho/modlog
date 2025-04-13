@@ -64,7 +64,8 @@ jobs:
       shell: bash
       run: |
         bazel run //demo:demo4
-    - name: demo-project5 (bazel all)
+    - name: demo-project5 (bazel ubuntu)
+      if: contains(matrix.os, 'ubuntu')
       shell: bash
       run: |
         bazel run //demo:demo5 || true
