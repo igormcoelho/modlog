@@ -48,9 +48,13 @@ auto main() -> int {
   obj2.mymethod();
   VLog(0) << "end testing obj2";
 
+  // changing global verbose level to v=1
+  modlog::modlog_default.vlevel = 1;
+
   ObjJson objj;
   objj.mymethod();
-  VLog(0) << "json dump: " << cjson.dump();
+  VLog(1) << "json dump: " << cjson.dump();
+  VLog(2) << "does not appear!";
 
   return 0;
 }
