@@ -56,11 +56,23 @@ jobs:
       shell: cmd
       run: |
         bazel run //demo:demo1
-    - name: demo-project3 (bazel all)
+    - name: demo-project3 (bazel ubuntu)
+      if: contains(matrix.os, 'ubuntu')
       shell: bash
       run: |
         bazel run //demo:demo3
-    - name: demo-project4 (bazel all)
+    - name: demo-project3 (bazel macos)
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        bazel run //demo:demo3
+    - name: demo-project4 (bazel ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        bazel run //demo:demo4
+    - name: demo-project4 (bazel macos)
+      if: contains(matrix.os, 'macos')
       shell: bash
       run: |
         bazel run //demo:demo4
