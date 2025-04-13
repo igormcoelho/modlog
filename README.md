@@ -240,6 +240,11 @@ If you feel something is missing, open an issue and let us know!
 
 Good luck!
 
+## Acknowledgements
+
+Thanks Israel for the discussions and incentive to build this project.
+Also thanks to the open-source C++ community and to the existing nice logging projects such as nglog, that motivated this work.
+
 ## License
 
 MIT License, 2025
