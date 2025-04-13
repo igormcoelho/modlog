@@ -25,7 +25,6 @@ jobs:
       if: contains(matrix.os, 'ubuntu')
       run: |
         sudo apt-get install ninja-build -y
-        python3 -m pip install -r requirements.txt
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
         bash -i -c "nvm install --lts"
         bash -i -c "sudo npm install -g @bazel/bazelisk"
@@ -35,12 +34,10 @@ jobs:
       run: |
         brew install ninja
         brew install bazelisk
-        python3 -m pip install -r requirements.txt --break-system-packages
     - name: Install bazel and local dependencies (windows)
       if: contains(matrix.os, 'windows')
       run: |
         choco install bazel
-        python3 -m pip install -r requirements.txt
     - name: Install cmake with pipx (All)
       run: |
         pipx install cmake
@@ -79,4 +76,4 @@ jobs:
       shell: bash
       run: |
         bazel run //demo:demo5
-        
+
