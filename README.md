@@ -1,5 +1,10 @@
 # modlog
-modlog: a modular logging library for C++23
+
+**modlog** is a modern, modular logging library for C++20 and C++23.  
+It's lightweight, header-only or module-based, and requires no macros or dependencies.
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![C++](https://img.shields.io/badge/C%2B%2B-20%2F23-blue.svg)
 
 ## What is `modlog`?
 
