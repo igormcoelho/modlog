@@ -9,6 +9,15 @@ The intention is to keep it very easy to use and easy to install, requiring a **
 
 At this moment, the performance is not intended to be competitive with the popular pre-module alternatives (like spdlog and nglog), as the purpose of this project is to simply allow modern macro-less C++23 to be easily build with a beautiful and simple logging system.
 
+### Features
+
+- Simple API: `Log(INFO) << "Message"`
+- Single Header (C++20) or single module (C++23)
+- No dependencies
+- Optional macros for familiarity (nglog-style)
+- Supports verbosity levels and debug-only logs
+- Easily customizable streams and semantic tagging
+
 ## How to use it?
 
 With C++20 enabled, simply **copy** [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
