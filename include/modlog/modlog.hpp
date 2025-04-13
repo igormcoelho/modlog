@@ -28,9 +28,9 @@
 #endif
 #endif
 
-#define MOD_EXPORT
+#define MODLOG_MOD_EXPORT
 #else
-#define MOD_EXPORT export
+#define MODLOG_MOD_EXPORT export
 #endif
 
 namespace modlog {
@@ -64,7 +64,7 @@ struct NullOStream : std::ostream {
 // =======================================
 
 /*
-MOD_EXPORT enum class LogLevel : int {
+MODLOG_MOD_EXPORT enum class LogLevel : int {
   SILENT = -1,
   INFO = 0,
   WARNING = 1,
@@ -72,16 +72,16 @@ MOD_EXPORT enum class LogLevel : int {
   FATAL = 3
 };
 
-MOD_EXPORT constexpr LogLevel SILENT = LogLevel::SILENT;
-MOD_EXPORT constexpr LogLevel INFO = LogLevel::INFO;
-MOD_EXPORT constexpr LogLevel WARNING = LogLevel::WARNING;
-MOD_EXPORT constexpr LogLevel ERROR = LogLevel::ERROR;
-MOD_EXPORT constexpr LogLevel FATAL = LogLevel::FATAL;
+MODLOG_MOD_EXPORT constexpr LogLevel SILENT = LogLevel::SILENT;
+MODLOG_MOD_EXPORT constexpr LogLevel INFO = LogLevel::INFO;
+MODLOG_MOD_EXPORT constexpr LogLevel WARNING = LogLevel::WARNING;
+MODLOG_MOD_EXPORT constexpr LogLevel ERROR = LogLevel::ERROR;
+MODLOG_MOD_EXPORT constexpr LogLevel FATAL = LogLevel::FATAL;
 */
 
-MOD_EXPORT enum LogLevel { SILENT, INFO, WARNING, ERROR, FATAL };
+MODLOG_MOD_EXPORT enum LogLevel { SILENT, INFO, WARNING, ERROR, FATAL };
 
-MOD_EXPORT class LogConfig {
+MODLOG_MOD_EXPORT class LogConfig {
  public:
   std::ostream* os{&std::cerr};
   // OBS: could host a unique_ptr here, if necessary for thirdparty streams
@@ -92,7 +92,7 @@ MOD_EXPORT class LogConfig {
   NullOStream no;
 };
 
-MOD_EXPORT inline LogConfig modlog_default;
+MODLOG_MOD_EXPORT inline LogConfig modlog_default;
 
 struct FatalStream : private std::streambuf, public std::ostream {
  private:
@@ -180,7 +180,7 @@ concept Loggable = requires(Self obj) {
 // logs with global configuration
 // ==============================
 
-MOD_EXPORT inline std::ostream& Log(
+MODLOG_MOD_EXPORT inline std::ostream& Log(
     LogLevel sev = LogLevel::INFO,
     const std::source_location location = std::source_location::current()) {
   return (sev < modlog_default.minlog)
@@ -195,7 +195,7 @@ MOD_EXPORT inline std::ostream& Log(
 // vlogs with global configuration
 // ===============================
 
-MOD_EXPORT inline std::ostream& VLog(
+MODLOG_MOD_EXPORT inline std::ostream& VLog(
     int vlevel,
     const std::source_location location = std::source_location::current()) {
   return (LogLevel::INFO < modlog_default.minlog) ||
@@ -211,7 +211,7 @@ MOD_EXPORT inline std::ostream& VLog(
 // logs with object-specific configuration
 // =======================================
 
-MOD_EXPORT template <Loggable LogObj>
+MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(LogObj* lo, const std::source_location location =
                                          std::source_location::current()) {
   return (LogLevel::INFO < lo->log().minlog)
@@ -221,7 +221,7 @@ inline std::ostream& Log(LogObj* lo, const std::source_location location =
                                  : *lo->log().os);
 }
 
-MOD_EXPORT template <Loggable LogObj>
+MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(
     LogLevel sev, LogObj* lo,
     const std::source_location location = std::source_location::current()) {
