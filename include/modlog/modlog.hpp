@@ -70,23 +70,17 @@ struct NullOStream : std::ostream {
 // =======================================
 
 /*
-MODLOG_MOD_EXPORT enum class LogLevel : int {
+// broken on windows!
+MODLOG_MOD_EXPORT enum LogLevel {
   SILENT = -1,
   INFO = 0,
   WARNING = 1,
   ERROR = 2,
   FATAL = 3
 };
-
-MODLOG_MOD_EXPORT constexpr LogLevel SILENT = LogLevel::SILENT;
-MODLOG_MOD_EXPORT constexpr LogLevel INFO = LogLevel::INFO;
-MODLOG_MOD_EXPORT constexpr LogLevel WARNING = LogLevel::WARNING;
-MODLOG_MOD_EXPORT constexpr LogLevel ERROR = LogLevel::ERROR;
-MODLOG_MOD_EXPORT constexpr LogLevel FATAL = LogLevel::FATAL;
 */
 
-MODLOG_MOD_EXPORT enum LogLevel1 {
-  //
+MODLOG_MOD_EXPORT enum class LogLevel : int {
   Silent = -1,
   Info = 0,
   Warning = 1,
@@ -94,21 +88,33 @@ MODLOG_MOD_EXPORT enum LogLevel1 {
   Fatal = 3
 };
 
-MODLOG_MOD_EXPORT enum LogLevel {
-  //
-  SILENT,
-  INFO,
-  WARNING,
-  ERROR,
-  FATAL
-};
+// Recommendation: do not use UPPER_CASE, use CamelCase
+// Example:    Log(Info) << "my text!";
+// Instead of: Log(INFO) << "my text!";
+// On windows, upper case will not work, only in Linux/MacOS
+// But... leaving UPPER CASE here for COMPATIBILITY purposes!
+#ifndef _WIN32
+MODLOG_MOD_EXPORT constexpr LogLevel SILENT = LogLevel::Silent;
+MODLOG_MOD_EXPORT constexpr LogLevel INFO = LogLevel::Info;
+MODLOG_MOD_EXPORT constexpr LogLevel WARNING = LogLevel::Warning;
+// ERROR is problematic on Windows
+MODLOG_MOD_EXPORT constexpr LogLevel ERROR = LogLevel::Error;
+MODLOG_MOD_EXPORT constexpr LogLevel FATAL = LogLevel::Fatal;
+#else
+// Windows do not have upper case macros, so must use CamelCase ones
+MODLOG_MOD_EXPORT using modlog::LogLevel::Error;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Info;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Silent;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Warning;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Fatal;
+#endif
 
 MODLOG_MOD_EXPORT class LogConfig {
  public:
   std::ostream* os{&std::cerr};
   // OBS: could host a unique_ptr here, if necessary for thirdparty streams
   // OBS 2: not necessary for the moment... if you need it, just let us know!
-  LogLevel minlog{LogLevel::INFO};
+  LogLevel minlog{LogLevel::Info};
   int vlevel{0};
   bool prefix{true};
   NullOStream no;
@@ -157,13 +163,13 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
                             std::string_view file = "", int line = -1) {
   // TODO: check if locking is required for multi-threaded setups...
   char level = '?';
-  if (l == LogLevel::INFO)
+  if (l == LogLevel::Info)
     level = 'I';
-  else if (l == LogLevel::WARNING)
+  else if (l == LogLevel::Warning)
     level = 'W';
-  else if (l == LogLevel::ERROR)
+  else if (l == LogLevel::Error)
     level = 'E';
-  else if (l == LogLevel::FATAL)
+  else if (l == LogLevel::Fatal)
     level = 'F';
 
   using namespace std::chrono;  // NOLINT
@@ -203,7 +209,7 @@ concept Loggable = requires(Self obj) {
 // ==============================
 
 MODLOG_MOD_EXPORT inline std::ostream& Log(
-    LogLevel sev = LogLevel::INFO,
+    LogLevel sev = LogLevel::Info,
     const std::source_location location = std::source_location::current()) {
   return (sev < modlog_default.minlog)
              ? modlog_default.no
@@ -220,11 +226,11 @@ MODLOG_MOD_EXPORT inline std::ostream& Log(
 MODLOG_MOD_EXPORT inline std::ostream& VLog(
     int vlevel,
     const std::source_location location = std::source_location::current()) {
-  return (LogLevel::INFO < modlog_default.minlog) ||
+  return (LogLevel::Info < modlog_default.minlog) ||
                  (vlevel > modlog_default.vlevel)
              ? modlog_default.no
              : (modlog_default.prefix
-                    ? prefix(modlog_default.os, LogLevel::INFO,
+                    ? prefix(modlog_default.os, LogLevel::Info,
                              location.file_name(), location.line())
                     : *modlog_default.os);
 }
@@ -236,9 +242,9 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
 MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(LogObj* lo, const std::source_location location =
                                          std::source_location::current()) {
-  return (LogLevel::INFO < lo->log().minlog)
+  return (LogLevel::Info < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::INFO,
+             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::Info,
                                           location.file_name(), location.line())
                                  : *lo->log().os);
 }

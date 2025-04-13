@@ -10,25 +10,26 @@
 #include <modlog/modlog.hpp>
 
 using namespace modlog;
-using modlog::LogLevel;
+using modlog::LogLevel::Fatal;
+using modlog::LogLevel::Info;
 
 int fib(int n) {
   Log() << "fib(n=" << n << ")";
   if (n <= 1)
     return 1;
   else if (n <= 4) {
-    Log(FATAL) << "n<=4 (" << n << ")" << std::endl;
+    Log(Fatal) << "n<=4 (" << n << ")" << std::endl;
     return -1;
   } else
     return fib(n - 1) + fib(n - 2);
 }
 
-void myfunc(int n) { Log(FATAL) << "n=" << n << "" << std::endl; }
+void myfunc(int n) { Log(Fatal) << "n=" << n << "" << std::endl; }
 
 auto main() -> int {
   using namespace modlog;
 
-  Log(INFO) << "Hello World!";
+  Log(Info) << "Hello World!";
 
   // recursive fatal stacktrace
   fib(8);

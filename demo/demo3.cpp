@@ -1,9 +1,14 @@
 #include <modlog/modlog_macros.hpp>
 
+#include "modlog/modlog.hpp"
+
 auto main(int argc, char* argv[]) -> int {
   modlog::StartLogs(argv[0]);
+  using namespace modlog;
+  using modlog::LogLevel::Info;
 
-  Log(modlog::INFO) << "Hello World!";
+  Log(LogLevel::Info) << "Hello World!";
+  Log(Info) << "Hello World!";
   LOG(INFO) << "Hello World!";
   LOG(ERROR) << "Hello World! Again...";
   // LOG() << "..."; // macro does not work without any severity level!

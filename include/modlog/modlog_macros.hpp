@@ -9,12 +9,26 @@
 // common macros for printing
 
 #define LOG(LEVEL) LOG_##LEVEL
-#define LOG_SILENT modlog::Log(modlog::SILENT, std::source_location::current())
-#define LOG_INFO modlog::Log(modlog::INFO, std::source_location::current())
+#define LOG_SILENT \
+  modlog::Log(modlog::LogLevel::Silent, std::source_location::current())
+#define LOG_INFO \
+  modlog::Log(modlog::LogLevel::Info, std::source_location::current())
 #define LOG_WARNING \
-  modlog::Log(modlog::WARNING, std::source_location::current())
-#define LOG_ERROR modlog::Log(modlog::ERROR, std::source_location::current())
-#define LOG_FATAL modlog::Log(modlog::FATAL, std::source_location::current())
+  modlog::Log(modlog::Warning, std::source_location::current())
+#define LOG_ERROR \
+  modlog::Log(modlog::LogLevel::Error, std::source_location::current())
+#define LOG_FATAL \
+  modlog::Log(modlog::LogLevel::Fatal, std::source_location::current())
+#define LOG_Silent \
+  modlog::Log(modlog::LogLevel::Silent, std::source_location::current())
+#define LOG_Info \
+  modlog::Log(modlog::LogLevel::Info, std::source_location::current())
+#define LOG_Warning \
+  modlog::Log(modlog::Warning, std::source_location::current())
+#define LOG_Error \
+  modlog::Log(modlog::LogLevel::Error, std::source_location::current())
+#define LOG_Fatal \
+  modlog::Log(modlog::LogLevel::Fatal, std::source_location::current())
 #define VLOG(VLEVEL) modlog::VLog(VLEVEL, std::source_location::current())
 
 #ifndef NDEBUG

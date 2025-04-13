@@ -54,11 +54,14 @@ See [demo/demo1.cpp](./demo/demo1.cpp):
 
 auto main() -> int {
   using namespace modlog;
+  using modlog::LogLevel::Error;
+  using modlog::LogLevel::Info;
+  using modlog::LogLevel::Silent;
 
-  Log(INFO) << "Hello World!";
-  Log(ERROR) << "Hello World! Again...";
+  Log(Info) << "Hello World!";
+  Log(Error) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(SILENT) << "Hello World! (does not appear...)";
+  Log(Silent) << "Hello World! (does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)";
   VLog(1) << "Hello World! (this does not appear...)";
@@ -89,11 +92,14 @@ import modlog;
 
 auto main() -> int {
   using namespace modlog;
+  using modlog::LogLevel::Error;
+  using modlog::LogLevel::Info;
+  using modlog::LogLevel::Silent;
 
-  Log(INFO) << "Hello World!";
-  Log(ERROR) << "Hello World! Again...";
+  Log(Info) << "Hello World!";
+  Log(Error) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(SILENT) << "Hello World! (does not appear...)";
+  Log(Silent) << "Hello World! (does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)";
   VLog(1) << "Hello World! (this does not appear...)";
@@ -122,8 +128,9 @@ See [demo/demo3.cpp](./demo/demo3.cpp):
 
 auto main(int argc, char* argv[]) -> int {
   modlog::StartLogs(argv[0]);
+  using modlog::LogLevel::Info;
 
-  Log(modlog::INFO) << "Hello World!";
+  Log(Info) << "Hello World!";
   LOG(INFO) << "Hello World!";
   LOG(ERROR) << "Hello World! Again...";
   // LOG() << "..."; // macro does not work without any severity level!
@@ -160,6 +167,8 @@ See [demo/demo4.cpp](./demo/demo4.cpp):
 #include <modlog/modlog.hpp>
 
 using namespace modlog;
+using modlog::LogLevel::Info;
+using modlog::LogLevel::Warning;
 
 inline SemStream cjson{};
 
@@ -167,20 +176,20 @@ inline SemStream cjson{};
 class Obj {
  public:
   std::ostream* ss{&std::cout};
-  LogLevel ll{LogLevel::INFO};
+  LogLevel ll{LogLevel::Info};
   LogConfig log() { return {.os = ss, .minlog = ll, .prefix = true}; }
 
   void mymethod() {
     int x = 0;
     int y = 3;
-    for (int i = 0; i < y; i++) Log(INFO, this) << "i=" << i << " x=" << x;
-    Log(WARNING, this) << "finished loop!";
+    for (int i = 0; i < y; i++) Log(Info, this) << "i=" << i << " x=" << x;
+    Log(Warning, this) << "finished loop!";
   }
 };
 
 class ObjJson {
  public:
-  LogLevel ll{LogLevel::INFO};
+  LogLevel ll{LogLevel::Info};
   LogConfig log() { return {.os = &cjson, .minlog = ll, .prefix = false}; }
 
   void mymethod() {
@@ -188,9 +197,9 @@ class ObjJson {
     int y = 3;
     for (int i = 0; i < y; i++) {
       if (this->log().os == &cjson)
-        Log(INFO, this) << "{\"i\":" << i << ", \"x\":" << x << "}";
+        Log(Info, this) << "{\"i\":" << i << ", \"x\":" << x << "}";
       else
-        Log(INFO, this) << "i=" << i << " x=" << x;
+        Log(Info, this) << "i=" << i << " x=" << x;
     }
   }
 };
@@ -202,7 +211,7 @@ auto main() -> int {
   VLog(0) << "end testing obj";
   VLog(0) << "begin testing obj2";
   Obj obj2;
-  obj2.ll = LogLevel::WARNING;
+  obj2.ll = LogLevel::Warning;
   obj2.mymethod();
   VLog(0) << "end testing obj2";
 
@@ -251,24 +260,26 @@ To demonstrate how this feature works, see demo5 recursive fibonacci function br
 #include <modlog/modlog.hpp>
 
 using namespace modlog;
+using modlog::LogLevel::Fatal;
+using modlog::LogLevel::Info;
 
 int fib(int n) {
   Log() << "fib(n=" << n << ")";
   if (n <= 1)
     return 1;
   else if (n <= 4) {
-    Log(FATAL) << "n<=4 (" << n << ")" << std::endl;
+    Log(Fatal) << "n<=4 (" << n << ")" << std::endl;
     return -1;
   } else
     return fib(n - 1) + fib(n - 2);
 }
 
-void myfunc(int n) { Log(FATAL) << "n=" << n << "" << std::endl; }
+void myfunc(int n) { Log(Fatal) << "n=" << n << "" << std::endl; }
 
 auto main() -> int {
   using namespace modlog;
 
-  Log(INFO) << "Hello World!";
+  Log(Info) << "Hello World!";
 
   // recursive fatal stacktrace
   fib(8);
