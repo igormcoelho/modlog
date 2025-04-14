@@ -16,8 +16,11 @@
 #include <chrono>
 #include <ctime>
 #include <filesystem>
+#if __cplusplus >= 202002L && __has_include(<format>)
 #include <format>
+#endif
 #include <iostream>
+#include <sstream>
 #if __cplusplus >= 202002L && __has_include(<source_location>)
 #include <source_location>
 #define USE_STD_SRC_LOC 1
