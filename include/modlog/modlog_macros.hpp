@@ -8,7 +8,7 @@
 
 // common macros for printing
 
-#if defined(__cpp_lib_source_location)
+#ifdef USE_STD_SRC_LOC
 #define MY_SRC_LOC_CURRENT std::source_location::current()
 #else
 #define MY_SRC_LOC_CURRENT \

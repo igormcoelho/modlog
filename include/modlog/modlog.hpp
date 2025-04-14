@@ -20,6 +20,7 @@
 #include <iostream>
 #if __cplusplus >= 202002L
 #include <source_location>
+#define USE_STD_SRC_LOC 1
 #endif
 #include <string>
 #include <thread>
@@ -37,7 +38,7 @@
 
 namespace modlog {
 
-#if defined(__cpp_lib_source_location)
+#ifdef USE_STD_SRC_LOC
 using my_source_location = std::source_location;
 #define MY_SOURCE_LOCATION() std::source_location::current()
 #else
