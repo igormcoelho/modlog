@@ -15,7 +15,7 @@ project(example_project VERSION 0.1.0 LANGUAGES CXX)
 
 Include(FetchContent)
 
-FetchContent_Declare(modlog GIT_REPOSITORY https://github.com/igormcoelho/modlog.git GIT_TAG 24ab413acc97ecca2e02cd93b403493f4df8b993)
+FetchContent_Declare(modlog GIT_REPOSITORY https://github.com/igormcoelho/modlog.git GIT_TAG v0.3.0)
 FetchContent_MakeAvailable(modlog)
 
 add_executable(modlog1 main.cpp)

@@ -12,7 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "a9e1cf81-9932-4810-974b-6eccaf14e457")
 set(CMAKE_CXX_MODULE_STD 1)
 
-project(modlog_project VERSION 0.3.0 LANGUAGES CXX)
+project(modlog_project VERSION 0.4.0 LANGUAGES CXX)
 
 add_library(modlog INTERFACE)
 add_library(modlog::modlog ALIAS modlog)
