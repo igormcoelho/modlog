@@ -18,7 +18,7 @@
 #include <filesystem>
 #include <format>
 #include <iostream>
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L && __has_include(<source_location>)
 #include <source_location>
 #define USE_STD_SRC_LOC 1
 #endif
