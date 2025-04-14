@@ -47,5 +47,7 @@ target_link_libraries(demo5_stacktrace PRIVATE -lstdc++exp)
 target_compile_definitions(demo5_stacktrace PUBLIC -DMODLOG_STACKTRACE=1)
 endif()
 
+add_executable(demo6 demo/demo6.cpp)
+target_link_libraries(demo6 PRIVATE modlog)
 
 
