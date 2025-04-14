@@ -30,6 +30,14 @@ At this moment, the performance is not intended to be competitive with the popul
 - C++20: Copy [modlog.hpp](./include/modlog/modlog.hpp) into your project and `#include` it.
 - C++23 with CXX Modules: Use CMake 4.0 or Bazel with module support (see below)
    * tested on GCC 15 and Clang 19 (not tested on MSVC!)
+- On CMake with `FetchContent`, just target `modlog` (for headers) or `modlog_module` (for modules)
+
+```
+FetchContent_Declare(modlog GIT_REPOSITORY https://github.com/igormcoelho/modlog.git GIT_TAG v0.3.0)
+FetchContent_MakeAvailable(modlog)
+```
+
+- On Bazel `MODULE.bazel`, just `git_override` for project `modlog` and target `@modlog://include:modlog` (for headers, and no official suport yet for modules)
 
 ### Why C++20 and C++23?
 This project uses modern C++ features such as C++20 Concepts, `std::filesystem`, `std::string_view`, `std::source_location` and `std::stacktrace`. These advances bring clarity, safety, and cleaner code.
