@@ -86,4 +86,19 @@ jobs:
       shell: bash
       run: |
         ./run_cmake_clang.sh
+    - name: demo-project6 C++17 (bazel ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        bazel run //demo:demo6
+    - name: demo-project6 C++17 (bazel macos)
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        bazel run //demo:demo6
+    - name: demo-project6 C++17 (bazel windows)
+      if: contains(matrix.os, 'windows')
+      shell: cmd
+      run: |
+        bazel run //demo:demo6_windows
 

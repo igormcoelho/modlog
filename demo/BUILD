@@ -52,3 +52,17 @@ cc_binary(
     copts = ["-g", "-std=c++23", "-DMODLOG_STACKTRACE=0"],
     deps = ["//include:modlog"],
 )
+
+cc_binary(
+    name = "demo6",
+    srcs = ["demo6.cpp"],
+    copts = ["-DNDEBUG", "-std=c++17"],
+    deps = ["//include:modlog"],
+)
+
+cc_binary(
+    name = "demo6_windows",
+    srcs = ["demo6.cpp"],
+    copts = ["/std:c++17"],
+    deps = ["//include:modlog"],
+)

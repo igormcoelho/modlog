@@ -35,6 +35,22 @@
 
 namespace modlog {
 
+#if defined(__cpp_lib_source_location)
+using my_source_location = std::source_location;
+#define MY_SOURCE_LOCATION() std::source_location::current()
+#else
+struct my_source_location {
+  std::string_view _file;
+  int _line;
+  int line() const { return _line; }
+  std::string_view file_name() const { return _file; }
+  constexpr my_source_location(std::string_view f, int l)
+      : _file{f}, _line{l} {}
+};
+#define MY_SOURCE_LOCATION() \
+  my_source_location { __FILE__, __LINE__ }
+#endif
+
 inline uintptr_t get_tid() {
 #ifdef _WIN32
   return static_cast<uintptr_t>(::GetCurrentThreadId());
@@ -74,6 +90,7 @@ MODLOG_MOD_EXPORT enum LogLevel {
 };
 */
 
+#if __cplusplus >= 202002L
 MODLOG_MOD_EXPORT enum class LogLevel : int {
   Silent = -1,
   Info = 0,
@@ -81,6 +98,15 @@ MODLOG_MOD_EXPORT enum class LogLevel : int {
   Error = 2,
   Fatal = 3
 };
+#else
+MODLOG_MOD_EXPORT enum LogLevel : int {
+  Silent = -1,
+  Info = 0,
+  Warning = 1,
+  Error = 2,
+  Fatal = 3
+};
+#endif
 
 // Recommendation: do not use UPPER_CASE, use CamelCase
 // Example:    Log(Info) << "my text!";
@@ -176,19 +202,39 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
 
   // add line break before, since we cannot control what's done after...
   *os << std::endl;
+#if defined(__cpp_lib_format)
   *os << std::format("{}{:04}{:02}{:02} {:02}:{:02}:{:02}.{:06} {:}", level,
                      now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday,
                      now_tm.tm_hour, now_tm.tm_min, now_tm.tm_sec, us.count(),
                      tid);
+#else
+  *os << level << std::setw(4) << std::setfill('0') << (now_tm.tm_year + 1900)
+      << std::setw(2) << std::setfill('0') << (now_tm.tm_mon + 1)
+      << std::setw(2) << std::setfill('0') << now_tm.tm_mday << ' '
+      << std::setw(2) << std::setfill('0') << now_tm.tm_hour << ':'
+      << std::setw(2) << std::setfill('0') << now_tm.tm_min << ':'
+      << std::setw(2) << std::setfill('0') << now_tm.tm_sec << '.'
+      << std::setw(6) << std::setfill('0') << us.count() << ' ' << tid;
+#endif
 
-  if (file != "")
+#if defined(__cpp_lib_format)
+
+  if (!file.empty())
     *os << std::format(" {}:{}] ", shortname(file), line);
   else
     *os << std::format("] ");
+#else
+  if (!file.empty()) {
+    *os << " " << shortname(file) << ":" << line << "] ";
+  } else {
+    *os << "] ";
+  }
+#endif
 
   return (level == 'F') ? fatal : *os;
 }
 
+#ifdef __cpp_concepts
 template <typename Self>
 concept Loggable = requires(Self obj) {
   { obj.stream() } -> std::same_as<std::ostream&>;
@@ -197,6 +243,9 @@ concept Loggable = requires(Self obj) {
 } || requires(Self obj) {
   { obj.log() } -> std::same_as<LogConfig>;
 };
+#else
+#define Loggable typename
+#endif
 
 // ==============================
 // logs with global configuration
@@ -204,7 +253,8 @@ concept Loggable = requires(Self obj) {
 
 MODLOG_MOD_EXPORT inline std::ostream& Log(
     LogLevel sev = LogLevel::Info,
-    const std::source_location location = std::source_location::current()) {
+    // const std::source_location location = std::source_location::current()) {
+    const my_source_location location = MY_SOURCE_LOCATION()) {
   return (sev < modlog_default.minlog)
              ? modlog_default.no
              : (modlog_default.prefix
@@ -219,7 +269,8 @@ MODLOG_MOD_EXPORT inline std::ostream& Log(
 
 MODLOG_MOD_EXPORT inline std::ostream& VLog(
     int vlevel,
-    const std::source_location location = std::source_location::current()) {
+    // const std::source_location location = std::source_location::current()) {
+    const my_source_location location = MY_SOURCE_LOCATION()) {
   return (LogLevel::Info < modlog_default.minlog) ||
                  (vlevel > modlog_default.vlevel)
              ? modlog_default.no
@@ -234,8 +285,10 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
 // =======================================
 
 MODLOG_MOD_EXPORT template <Loggable LogObj>
-inline std::ostream& Log(LogObj* lo, const std::source_location location =
-                                         std::source_location::current()) {
+inline std::ostream& Log(
+    LogObj* lo,
+    // const std::source_location location = std::source_location::current()) {
+    const my_source_location location = MY_SOURCE_LOCATION()) {
   return (LogLevel::Info < lo->log().minlog)
              ? modlog_default.no
              : (lo->log().prefix ? prefix(lo->log().os, LogLevel::Info,
@@ -246,7 +299,8 @@ inline std::ostream& Log(LogObj* lo, const std::source_location location =
 MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(
     LogLevel sev, LogObj* lo,
-    const std::source_location location = std::source_location::current()) {
+    // const std::source_location location = std::source_location::current()) {
+    const my_source_location location = MY_SOURCE_LOCATION()) {
   return (sev < lo->log().minlog)
              ? modlog_default.no
              : (lo->log().prefix ? prefix(lo->log().os, sev,
