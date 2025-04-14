@@ -7,7 +7,7 @@
 It's lightweight, header-only or module-based, and requires no macros or dependencies.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![C++](https://img.shields.io/badge/C%2B%2B-20%2F23-blue.svg)
+![C++](https://img.shields.io/badge/C%2B%2B-17%2F20%2F23-blue.svg)
 
 ## What is `modlog`?
 
