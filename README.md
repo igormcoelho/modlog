@@ -3,7 +3,7 @@
 [![Tested on Windows, Linux and MacOS](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml/badge.svg)](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml)
 
 
-**modlog** is a modern, modular logging library for C++20 and C++23.  
+**modlog** is a modern, modular logging library for C++17, C++20 and C++23.  
 It's lightweight, header-only or module-based, and requires no macros or dependencies.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -21,13 +21,14 @@ At this moment, the performance is not intended to be competitive with the popul
 
 - Simple API: `Log(INFO) << "Message"`
 - Single Header (C++20) or single module (C++23)
+- C++17 is also supported, although C++20 is recommended (for more precise file/line reporting)
 - No dependencies
 - Optional macros for familiarity (nglog-style)
 - Supports verbosity levels and debug-only logs
 - Easily customizable streams and semantic tagging
 
 ### Simple Installation
-- C++20: Copy [modlog.hpp](./include/modlog/modlog.hpp) into your project and `#include` it.
+- C++17/C++20: Copy [modlog.hpp](./include/modlog/modlog.hpp) into your project and `#include` it.
 - C++23 with CXX Modules: Use CMake 4.0 or Bazel with module support (see below)
    * tested on GCC 15 and Clang 19 (not tested on MSVC!)
 - On CMake with `FetchContent`, just target `modlog` (for headers) or `modlog_module` (for modules)
@@ -41,13 +42,13 @@ FetchContent_MakeAvailable(modlog)
 
 ### Why C++20 and C++23?
 This project uses modern C++ features such as C++20 Concepts, `std::filesystem`, `std::string_view`, `std::source_location` and `std::stacktrace`. These advances bring clarity, safety, and cleaner code.
-While it's technically possible to adapt the project to C++17, it would require removing or rewriting several modern features. Support for C++14 is not feasible due to the use of `inline` global variables.
+It's technically possible to adapt the project to C++17, so we support it (one may need to observe if perfect file/line reporting is required, since this works better on C++20 only). Support for C++14 is not feasible due to the use of `inline` global variables.
 
-So, it's time to advance to C++20, at least, and get its benefits; and *even better* with C++23 with CXX Modules and `import std`.
+So, it's time to advance to C++17, at least, and get its benefits; and *even better* with C++23 with CXX Modules and `import std`.
 
 ## How to use it?
 
-With C++20 enabled, just copy [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
+With C++17/C++20 enabled, just copy [modlog.hpp](./include/modlog/modlog.hpp) file into a `include/modlog` folder and `#include<modlog/modlog.hpp>`
 
 With C++23, use CMake 4.0 to build the project with `import std` support, targetting this git repo.
 
@@ -347,9 +348,13 @@ WARNING: stacktrace unavailable, must #include <stacktrace> and -lstdc++exp
 terminate called without an active exception
 ```
 
+## Demo 6
+
+Check folder demo/ for more examples. Demo 6 works on C++17, C++20 and C++23.
+
 ## Future Work
 
-This project is experimental, targetting C++20 and C++23 standards, so bugs may exist!
+This project is experimental, targetting C++17, C++20 and C++23 standards, so bugs may exist!
 
 The temporary file logging is still unimplemented, so as other operations that may
 be expected from a more developed logging library. 
