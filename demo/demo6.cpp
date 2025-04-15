@@ -19,7 +19,7 @@ auto main() -> int {
   VLog(1) << "Hello World! (this does not appear...)" << std::endl;
 
   // enable JSON logging
-  modlog::modlog_default.fprefix = modlog::json_prefix;
+  modlog::modlog_default.fprefixdata = modlog::json_prefix;
 
   Log(Info) << "Hello World!";
   // finish json!

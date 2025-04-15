@@ -172,14 +172,9 @@ inline FatalStream fatal;
 //         helper prefix function
 // =======================================
 
-inline std::string shortname(std::string_view path) {
-  return std::filesystem::path(path).filename().string();
-}
-
-MODLOG_MOD_EXPORT inline std::ostream& default_prefix(std::ostream* os,
-                                                      LogLevel l,
-                                                      std::string_view file,
-                                                      int line, bool) {
+MODLOG_MOD_EXPORT inline std::ostream& default_prefix_data(
+    std::ostream& os, LogLevel l, tm now_tm, std::chrono::microseconds us,
+    uintptr_t tid, std::string_view short_file, int line, bool debug) {
   // TODO: check if locking is required for multi-threaded setups...
   char level = '?';
   if (l == LogLevel::Info)
@@ -191,51 +186,47 @@ MODLOG_MOD_EXPORT inline std::ostream& default_prefix(std::ostream* os,
   else if (l == LogLevel::Fatal)
     level = 'F';
 
-  using namespace std::chrono;  // NOLINT
-
-  auto now = system_clock::now();
-  auto now_time_t = system_clock::to_time_t(now);
-  auto now_tm = *std::localtime(&now_time_t);
-  auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
-  auto tid = get_tid();
-
   // add line break before, since we cannot control what's done after...
-  *os << std::endl;
+  os << std::endl;
 #if defined(__cpp_lib_format)
-  *os << std::format("{}{:04}{:02}{:02} {:02}:{:02}:{:02}.{:06} {:}", level,
-                     now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday,
-                     now_tm.tm_hour, now_tm.tm_min, now_tm.tm_sec, us.count(),
-                     tid);
+  os << std::format("{}{:04}{:02}{:02} {:02}:{:02}:{:02}.{:06} {:}", level,
+                    now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday,
+                    now_tm.tm_hour, now_tm.tm_min, now_tm.tm_sec, us.count(),
+                    tid);
 #else
-  *os << level << std::setw(4) << std::setfill('0') << (now_tm.tm_year + 1900)
-      << std::setw(2) << std::setfill('0') << (now_tm.tm_mon + 1)
-      << std::setw(2) << std::setfill('0') << now_tm.tm_mday << ' '
-      << std::setw(2) << std::setfill('0') << now_tm.tm_hour << ':'
-      << std::setw(2) << std::setfill('0') << now_tm.tm_min << ':'
-      << std::setw(2) << std::setfill('0') << now_tm.tm_sec << '.'
-      << std::setw(6) << std::setfill('0') << us.count() << ' ' << tid;
+  os << level << std::setw(4) << std::setfill('0') << (now_tm.tm_year + 1900)
+     << std::setw(2) << std::setfill('0') << (now_tm.tm_mon + 1) << std::setw(2)
+     << std::setfill('0') << now_tm.tm_mday << ' ' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_hour << ':' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_min << ':' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_sec << '.' << std::setw(6)
+     << std::setfill('0') << us.count() << ' ' << tid;
 #endif
 
 #if defined(__cpp_lib_format)
 
-  if (!file.empty())
-    *os << std::format(" {}:{}] ", shortname(file), line);
+  if (!short_file.empty())
+    os << std::format(" {}:{}] ", short_file, line);
   else
-    *os << std::format("] ");
+    os << std::format("] ");
 #else
-  if (!file.empty()) {
-    *os << " " << shortname(file) << ":" << line << "] ";
+  if (!short_file.empty()) {
+    os << " " << short_file << ":" << line << "] ";
   } else {
-    *os << "] ";
+    os << "] ";
   }
 #endif
 
-  return (level == 'F') ? fatal : *os;
+  return (level == 'F') ? fatal : os;
 }
 
-MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel l,
-                                                   std::string_view file,
-                                                   int line, bool debug) {
+// MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel
+// l,
+//                                                    std::string_view file,
+//                                                    int line, bool debug) {
+MODLOG_MOD_EXPORT inline std::ostream& json_prefix(
+    std::ostream& os, LogLevel l, tm now_tm, std::chrono::microseconds us,
+    uintptr_t tid, std::string_view short_file, int line, bool debug) {
   // TODO: check if locking is required for multi-threaded setups...
   std::string slevel;
   if (l == LogLevel::Info)
@@ -247,14 +238,6 @@ MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel l,
   else if (l == LogLevel::Fatal)
     slevel = "fatal";
   if (debug) slevel = "debug";
-
-  using namespace std::chrono;  // NOLINT
-
-  auto now = system_clock::now();
-  auto now_time_t = system_clock::to_time_t(now);
-  auto now_tm = *std::localtime(&now_time_t);
-  auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
-  auto tid = get_tid();
 
 #if defined(__cpp_lib_format)
   std::string stime =
@@ -272,15 +255,15 @@ MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel l,
      << std::setfill('0') << us.count();
   std::string stime = ss.str();
 #endif
-  *os << "{\"level\":\"" << slevel << "\", \"timestamp\":\"" << stime << "\", ";
+  os << "{\"level\":\"" << slevel << "\", \"timestamp\":\"" << stime << "\", ";
 
-  if (!file.empty())
-    *os << "\"caller\":\"" << shortname(file) << ":" << line << "\", ";
+  if (!short_file.empty())
+    os << "\"caller\":\"" << short_file << ":" << line << "\", ";
 
-  *os << "\"tid\":" << tid << ", ";
+  os << "\"tid\":" << tid << ", ";
 
-  *os << "\"msg\":\"";
-  return (l == LogLevel::Fatal) ? fatal : *os;
+  os << "\"msg\":\"";
+  return (l == LogLevel::Fatal) ? fatal : os;
 }
 
 MODLOG_MOD_EXPORT class LogConfig {
@@ -292,9 +275,35 @@ MODLOG_MOD_EXPORT class LogConfig {
   int vlevel{0};
   bool prefix{true};
   NullOStream no;
-  std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int,
-                              bool)>
-      fprefix{modlog::default_prefix};
+  // std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int,
+  //                            bool)>
+  //    fprefix{modlog::default_prefix};
+  std::function<std::ostream&(std::ostream&, LogLevel, tm,
+                              std::chrono::microseconds, uintptr_t,
+                              std::string_view, int, bool)>
+      fprefixdata{default_prefix_data};
+
+  std::ostream& fprefix(std::ostream* os, LogLevel l, std::string_view path,
+                        int line, bool debug) {
+    // add line break before, since we cannot control what's done after...
+    // *os << std::endl;
+    using namespace std::chrono;  // NOLINT
+
+    auto now = system_clock::now();
+    auto now_time_t = system_clock::to_time_t(now);
+    auto now_tm = *std::localtime(&now_time_t);
+    auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
+    auto tid = get_tid();
+    std::string short_file = "";
+    if (!path.empty())
+      short_file = std::filesystem::path(path).filename().string();
+
+    // =====================================
+    // use personalized prefix data function
+    // =====================================
+
+    return this->fprefixdata(*os, l, now_tm, us, tid, short_file, line, debug);
+  }
 };
 
 MODLOG_MOD_EXPORT inline LogConfig modlog_default;
