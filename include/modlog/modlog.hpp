@@ -176,8 +176,10 @@ inline std::string shortname(std::string_view path) {
   return std::filesystem::path(path).filename().string();
 }
 
-inline std::ostream& default_prefix(std::ostream* os, LogLevel l,
-                                    std::string_view file, int line) {
+MODLOG_MOD_EXPORT inline std::ostream& default_prefix(std::ostream* os,
+                                                      LogLevel l,
+                                                      std::string_view file,
+                                                      int line, bool) {
   // TODO: check if locking is required for multi-threaded setups...
   char level = '?';
   if (l == LogLevel::Info)
@@ -231,6 +233,56 @@ inline std::ostream& default_prefix(std::ostream* os, LogLevel l,
   return (level == 'F') ? fatal : *os;
 }
 
+MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel l,
+                                                   std::string_view file,
+                                                   int line, bool debug) {
+  // TODO: check if locking is required for multi-threaded setups...
+  std::string slevel;
+  if (l == LogLevel::Info)
+    slevel = "info";
+  else if (l == LogLevel::Warning)
+    slevel = "warn";
+  else if (l == LogLevel::Error)
+    slevel = "error";
+  else if (l == LogLevel::Fatal)
+    slevel = "fatal";
+  if (debug) slevel = "debug";
+
+  using namespace std::chrono;  // NOLINT
+
+  auto now = system_clock::now();
+  auto now_time_t = system_clock::to_time_t(now);
+  auto now_tm = *std::localtime(&now_time_t);
+  auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
+  auto tid = get_tid();
+
+#if defined(__cpp_lib_format)
+  std::string stime =
+      std::format("{:04}{:02}{:02} {:02}:{:02}:{:02}.{:06}",
+                  now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday,
+                  now_tm.tm_hour, now_tm.tm_min, now_tm.tm_sec, us.count());
+#else
+  std::stringstream ss;
+  ss << std::setw(4) << std::setfill('0') << (now_tm.tm_year + 1900)
+     << std::setw(2) << std::setfill('0') << (now_tm.tm_mon + 1) << std::setw(2)
+     << std::setfill('0') << now_tm.tm_mday << ' ' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_hour << ':' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_min << ':' << std::setw(2)
+     << std::setfill('0') << now_tm.tm_sec << '.' << std::setw(6)
+     << std::setfill('0') << us.count();
+  std::string stime = ss.str();
+#endif
+  *os << "{\"level\":\"" << slevel << "\", \"timestamp\":\"" << stime << "\", ";
+
+  if (!file.empty())
+    *os << "\"caller\":\"" << shortname(file) << ":" << line << "\", ";
+
+  *os << "\"tid\":" << tid << ", ";
+
+  *os << "\"msg\":\"";
+  return (l == LogLevel::Fatal) ? fatal : *os;
+}
+
 MODLOG_MOD_EXPORT class LogConfig {
  public:
   std::ostream* os{&std::cerr};
@@ -240,7 +292,8 @@ MODLOG_MOD_EXPORT class LogConfig {
   int vlevel{0};
   bool prefix{true};
   NullOStream no;
-  std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int)>
+  std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int,
+                              bool)>
       fprefix{modlog::default_prefix};
 };
 
@@ -272,7 +325,7 @@ MODLOG_MOD_EXPORT inline std::ostream& Log(
              : (modlog_default.prefix
                     ? modlog_default.fprefix(modlog_default.os, sev,
                                              location.file_name(),
-                                             location.line())
+                                             location.line(), false)
                     : *modlog_default.os);
 }
 
@@ -290,7 +343,7 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
              : (modlog_default.prefix
                     ? modlog_default.fprefix(modlog_default.os, LogLevel::Info,
                                              location.file_name(),
-                                             location.line())
+                                             location.line(), true)
                     : *modlog_default.os);
 }
 
@@ -305,10 +358,11 @@ inline std::ostream& Log(
     const my_source_location location = MY_SOURCE_LOCATION()) {
   return (LogLevel::Info < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? modlog_default.fprefix(
-                                       lo->log().os, LogLevel::Info,
-                                       location.file_name(), location.line())
-                                 : *lo->log().os);
+             : (lo->log().prefix
+                    ? modlog_default.fprefix(lo->log().os, LogLevel::Info,
+                                             location.file_name(),
+                                             location.line(), false)
+                    : *lo->log().os);
 }
 
 MODLOG_MOD_EXPORT template <Loggable LogObj>
@@ -318,9 +372,9 @@ inline std::ostream& Log(
     const my_source_location location = MY_SOURCE_LOCATION()) {
   return (sev < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? modlog_default.fprefix(lo->log().os, sev,
-                                                          location.file_name(),
-                                                          location.line())
+             : (lo->log().prefix ? modlog_default.fprefix(
+                                       lo->log().os, sev, location.file_name(),
+                                       location.line(), false)
                                  : *lo->log().os);
 }
 

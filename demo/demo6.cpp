@@ -15,8 +15,15 @@ auto main() -> int {
   Log(Silent) << "Hello World! (does not appear...)";
   LOG(INFO) << "what about this line number?";
 
-  VLog(0) << "Hello World! (this is INFO too)";
-  VLog(1) << "Hello World! (this does not appear...)";
+  VLog(0) << "Hello World! (this is INFO too)" << std::endl;
+  VLog(1) << "Hello World! (this does not appear...)" << std::endl;
+
+  // enable JSON logging
+  modlog::modlog_default.fprefix = modlog::json_prefix;
+
+  Log(Info) << "Hello World!";
+  // finish json!
+  *modlog::modlog_default.os << "\"}";
 
   return 0;
 }

@@ -61,7 +61,6 @@ Log output indicates type `I|W|E|F`, then `yyyy-mm-dd`, then time, and finally t
 See [demo/demo1.cpp](./demo/demo1.cpp):
 
 ```.cpp
-
 #include <modlog/modlog.hpp>
 
 auto main() -> int {
@@ -75,8 +74,15 @@ auto main() -> int {
   Log() << "Hello World! (this is INFO)";
   Log(Silent) << "Hello World! (does not appear...)";
 
-  VLog(0) << "Hello World! (this is INFO too)";
-  VLog(1) << "Hello World! (this does not appear...)";
+  VLog(0) << "Hello World! (this is INFO too)" << std::endl;
+  VLog(1) << "Hello World! (this does not appear...)" << std::endl;
+
+  // enable JSON logging
+  modlog::modlog_default.fprefix = modlog::json_prefix;
+
+  Log(Info) << "Hello World!";
+  // finish json!
+  *modlog::modlog_default.os << "\"}";
 
   return 0;
 }
@@ -86,10 +92,11 @@ Outputs are (using `bazel run //demo:demo1`):
 
 
 ```
-I20250413 11:39:22.562022 129964449568576 demo1.cpp:7] Hello World!
-E20250413 11:39:22.562357 129964449568576 demo1.cpp:8] Hello World! Again...
-I20250413 11:39:22.562483 129964449568576 demo1.cpp:9] Hello World! (this is INFO)
-I20250413 11:39:22.562578 129964449568576 demo1.cpp:12] Hello World! (this is INFO too)
+I20250415 14:28:33.121300 139657165825856 demo1.cpp:10] Hello World!
+E20250415 14:28:33.121672 139657165825856 demo1.cpp:11] Hello World! Again...
+I20250415 14:28:33.121782 139657165825856 demo1.cpp:12] Hello World! (this is INFO)
+I20250415 14:28:33.121883 139657165825856 demo1.cpp:15] Hello World! (this is INFO too)
+{"level":"info", "timestamp":"20250415 14:28:33.122004", "caller":"demo1.cpp:21", "tid":139657165825856, "msg":"Hello World!"}
 ```
 
 ## Demo 2 (C++23 with `import std`)
@@ -113,8 +120,15 @@ auto main() -> int {
   Log() << "Hello World! (this is INFO)";
   Log(Silent) << "Hello World! (does not appear...)";
 
-  VLog(0) << "Hello World! (this is INFO too)";
-  VLog(1) << "Hello World! (this does not appear...)";
+  VLog(0) << "Hello World! (this is INFO too)" << std::endl;
+  VLog(1) << "Hello World! (this does not appear...)" << std::endl;
+
+  // enable JSON logging
+  modlog::modlog_default.fprefix = modlog::json_prefix;
+
+  Log(Info) << "Hello World!";
+  // finish json!
+  *modlog::modlog_default.os << "\"}";
 
   return 0;
 }
@@ -123,10 +137,11 @@ auto main() -> int {
 Outputs are (using CMake 4.0 and a recent compiler, Clang 19 or GCC 15):
 
 ```
-I20250413 11:40:21.760968 125558500837184 demo2.cpp:6] Hello World!
-E20250413 11:40:21.761265 125558500837184 demo2.cpp:7] Hello World! Again...
-I20250413 11:40:21.761336 125558500837184 demo2.cpp:8] Hello World! (this is INFO)
-I20250413 11:40:21.761433 125558500837184 demo2.cpp:11] Hello World! (this is INFO too)
+I20250415 14:29:50.024595 137414434473792 modlog.hpp:322] Hello World!
+E20250415 14:29:50.024991 137414434473792 modlog.hpp:322] Hello World! Again...
+I20250415 14:29:50.025170 137414434473792 modlog.hpp:322] Hello World! (this is INFO)
+I20250415 14:29:50.025360 137414434473792 modlog.hpp:339] Hello World! (this is INFO too)
+{"level":"info", "timestamp":"20250415 14:29:50.025518", "caller":"modlog.hpp:322", "tid":137414434473792, "msg":"Hello World!"}
 ```
 
 ## Demo 3 (C++20 with macros)
