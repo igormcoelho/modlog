@@ -166,7 +166,7 @@ struct FatalStream : private std::streambuf, public std::ostream {
   }
 };
 
-inline FatalStream fatal;
+MODLOG_MOD_EXPORT inline FatalStream fatal;
 
 // =======================================
 //         helper prefix function
@@ -220,10 +220,6 @@ MODLOG_MOD_EXPORT inline std::ostream& default_prefix_data(
   return (level == 'F') ? fatal : os;
 }
 
-// MODLOG_MOD_EXPORT inline std::ostream& json_prefix(std::ostream* os, LogLevel
-// l,
-//                                                    std::string_view file,
-//                                                    int line, bool debug) {
 MODLOG_MOD_EXPORT inline std::ostream& json_prefix(
     std::ostream& os, LogLevel l, tm now_tm, std::chrono::microseconds us,
     uintptr_t tid, std::string_view short_file, int line, bool debug) {
@@ -275,11 +271,8 @@ MODLOG_MOD_EXPORT class LogConfig {
   int vlevel{0};
   bool prefix{true};
   NullOStream no;
-  // std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int,
-  //                            bool)>
-  //    fprefix{modlog::default_prefix};
-  std::function<std::ostream&(std::ostream&, LogLevel, tm,
-                              std::chrono::microseconds, uintptr_t,
+  std::function<std::ostream&(std::ostream&, LogLevel, std::tm,
+                              std::chrono::microseconds, std::uintptr_t,
                               std::string_view, int, bool)>
       fprefixdata{default_prefix_data};
 

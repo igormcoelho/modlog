@@ -104,6 +104,7 @@ I20250415 14:28:33.121883 139657165825856 demo1.cpp:15] Hello World! (this is IN
 This one can be build with CMake 4.0 targetting `modlog::modlog_module`, with Clang 19 or GCC 15 (not tested on MSVC).
 To build with C++23 module, you will need two files: the header-only .hpp and the module on [src/modlog.cppm](./src/modlog.cppm).
 
+This also shows how to print in JSON or some personalized logfmt log kind.
 See [demo/demo2.cpp](./demo/demo2.cpp):
 
 ```.cpp
@@ -114,6 +115,7 @@ auto main() -> int {
   using modlog::LogLevel::Error;
   using modlog::LogLevel::Info;
   using modlog::LogLevel::Silent;
+  using modlog::LogLevel::Warning;
 
   Log(Info) << "Hello World!";
   Log(Error) << "Hello World! Again...";
@@ -130,6 +132,36 @@ auto main() -> int {
   // finish json!
   *modlog::modlog_default.os << "\"}";
 
+  // ==================================
+  // enable personalized logfmt logging
+  // ==================================
+  modlog::modlog_default.fprefixdata =
+      [](std::ostream& os, LogLevel l, std::tm local_tm,
+         std::chrono::microseconds us, std::uintptr_t tid,
+         std::string_view short_file, int line, bool debug) -> std::ostream& {
+    os << std::endl;  // always break line
+    std::string slevel;
+    if (l == LogLevel::Info)
+      slevel = "info";
+    else if (l == LogLevel::Warning)
+      slevel = "warn";
+    else if (l == LogLevel::Error)
+      slevel = "error";
+    if (debug) slevel = "debug";
+
+    os << std::format(
+        "level={} time={:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03} thread={} "
+        "caller={}:{} msg=",
+        slevel, local_tm.tm_year + 1900, local_tm.tm_mon + 1, local_tm.tm_mday,
+        local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec, us.count() / 1000,
+        tid, short_file, line);
+
+    return os;
+  };
+
+  Log(Info) << "Hello " << "World!";
+  Log(Warning) << "Hello World!";
+
   return 0;
 }
 ```
@@ -137,11 +169,13 @@ auto main() -> int {
 Outputs are (using CMake 4.0 and a recent compiler, Clang 19 or GCC 15):
 
 ```
-I20250415 14:29:50.024595 137414434473792 modlog.hpp:322] Hello World!
-E20250415 14:29:50.024991 137414434473792 modlog.hpp:322] Hello World! Again...
-I20250415 14:29:50.025170 137414434473792 modlog.hpp:322] Hello World! (this is INFO)
-I20250415 14:29:50.025360 137414434473792 modlog.hpp:339] Hello World! (this is INFO too)
-{"level":"info", "timestamp":"20250415 14:29:50.025518", "caller":"modlog.hpp:322", "tid":137414434473792, "msg":"Hello World!"}
+I20250415 18:38:00.042943 134558756534080 modlog.hpp:324] Hello World!
+E20250415 18:38:00.043395 134558756534080 modlog.hpp:324] Hello World! Again...
+I20250415 18:38:00.043552 134558756534080 modlog.hpp:324] Hello World! (this is INFO)
+I20250415 18:38:00.043708 134558756534080 modlog.hpp:341] Hello World! (this is INFO too)
+{"level":"info", "timestamp":"20250415 18:38:00.043876", "caller":"modlog.hpp:324", "tid":134558756534080, "msg":"Hello World!"}
+level=info time=2025-04-15T18:38:00.044 thread=134558756534080 caller=modlog.hpp:324 msg=Hello World!
+level=warn time=2025-04-15T18:38:00.044 thread=134558756534080 caller=modlog.hpp:324 msg=Hello World!
 ```
 
 ## Demo 3 (C++20 with macros)
