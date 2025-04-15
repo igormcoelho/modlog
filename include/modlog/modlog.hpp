@@ -19,6 +19,7 @@
 #if __cplusplus >= 202002L && __has_include(<format>)
 #include <format>
 #endif
+#include <functional>
 #include <iostream>
 #include <sstream>
 #if __cplusplus >= 202002L && __has_include(<source_location>)
@@ -135,19 +136,9 @@ MODLOG_MOD_EXPORT using modlog::LogLevel::Warning;
 MODLOG_MOD_EXPORT using modlog::LogLevel::Fatal;
 #endif
 
-MODLOG_MOD_EXPORT class LogConfig {
- public:
-  std::ostream* os{&std::cerr};
-  // OBS: could host a unique_ptr here, if necessary for thirdparty streams
-  // OBS 2: not necessary for the moment... if you need it, just let us know!
-  LogLevel minlog{LogLevel::Info};
-  int vlevel{0};
-  bool prefix{true};
-  NullOStream no;
-};
-
-MODLOG_MOD_EXPORT inline LogConfig modlog_default;
-
+// =======================================
+//             handling Fatal
+// =======================================
 struct FatalStream : private std::streambuf, public std::ostream {
  private:
   std::stringstream buffer;
@@ -185,8 +176,8 @@ inline std::string shortname(std::string_view path) {
   return std::filesystem::path(path).filename().string();
 }
 
-inline std::ostream& prefix(std::ostream* os, LogLevel l,
-                            std::string_view file = "", int line = -1) {
+inline std::ostream& default_prefix(std::ostream* os, LogLevel l,
+                                    std::string_view file, int line) {
   // TODO: check if locking is required for multi-threaded setups...
   char level = '?';
   if (l == LogLevel::Info)
@@ -240,6 +231,21 @@ inline std::ostream& prefix(std::ostream* os, LogLevel l,
   return (level == 'F') ? fatal : *os;
 }
 
+MODLOG_MOD_EXPORT class LogConfig {
+ public:
+  std::ostream* os{&std::cerr};
+  // OBS: could host a unique_ptr here, if necessary for thirdparty streams
+  // OBS 2: not necessary for the moment... if you need it, just let us know!
+  LogLevel minlog{LogLevel::Info};
+  int vlevel{0};
+  bool prefix{true};
+  NullOStream no;
+  std::function<std::ostream&(std::ostream*, LogLevel, std::string_view, int)>
+      fprefix{modlog::default_prefix};
+};
+
+MODLOG_MOD_EXPORT inline LogConfig modlog_default;
+
 #ifdef __cpp_concepts
 template <typename Self>
 concept Loggable = requires(Self obj) {
@@ -264,8 +270,9 @@ MODLOG_MOD_EXPORT inline std::ostream& Log(
   return (sev < modlog_default.minlog)
              ? modlog_default.no
              : (modlog_default.prefix
-                    ? prefix(modlog_default.os, sev, location.file_name(),
-                             location.line())
+                    ? modlog_default.fprefix(modlog_default.os, sev,
+                                             location.file_name(),
+                                             location.line())
                     : *modlog_default.os);
 }
 
@@ -281,8 +288,9 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
                  (vlevel > modlog_default.vlevel)
              ? modlog_default.no
              : (modlog_default.prefix
-                    ? prefix(modlog_default.os, LogLevel::Info,
-                             location.file_name(), location.line())
+                    ? modlog_default.fprefix(modlog_default.os, LogLevel::Info,
+                                             location.file_name(),
+                                             location.line())
                     : *modlog_default.os);
 }
 
@@ -297,8 +305,9 @@ inline std::ostream& Log(
     const my_source_location location = MY_SOURCE_LOCATION()) {
   return (LogLevel::Info < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, LogLevel::Info,
-                                          location.file_name(), location.line())
+             : (lo->log().prefix ? modlog_default.fprefix(
+                                       lo->log().os, LogLevel::Info,
+                                       location.file_name(), location.line())
                                  : *lo->log().os);
 }
 
@@ -309,8 +318,9 @@ inline std::ostream& Log(
     const my_source_location location = MY_SOURCE_LOCATION()) {
   return (sev < lo->log().minlog)
              ? modlog_default.no
-             : (lo->log().prefix ? prefix(lo->log().os, sev,
-                                          location.file_name(), location.line())
+             : (lo->log().prefix ? modlog_default.fprefix(lo->log().os, sev,
+                                                          location.file_name(),
+                                                          location.line())
                                  : *lo->log().os);
 }
 
