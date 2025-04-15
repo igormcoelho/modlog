@@ -295,7 +295,13 @@ MODLOG_MOD_EXPORT class LogConfig {
     // use personalized prefix data function
     // =====================================
 
-    return this->fprefixdata(*os, l, now_tm, us, tid, short_file, line, debug);
+    // TODO: does fprefixdata needs to "return" ostream?
+    // will it handle fatal too? for now, leaving both options...
+    auto& os2 =
+        this->fprefixdata(*os, l, now_tm, us, tid, short_file, line, debug);
+    // TODO: dump 'os2' into Fatal or not?
+    // TODO 2: decide later... better to keep automatic Fatal for now!
+    return (l == LogLevel::Fatal) ? fatal : os2;
   }
 };
 
