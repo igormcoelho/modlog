@@ -2,8 +2,7 @@
 
 [![Tested on Windows, Linux and MacOS](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml/badge.svg)](https://github.com/igormcoelho/modlog/actions/workflows/multiplatform.yml)
 
-
-**modlog** is a modern, modular logging library for C++17, C++20 and C++23.  
+**modlog** is a modern, cross-platform modular logging library for C++17, C++20 and C++23  
 It's lightweight, header-only or module-based, and requires no macros or dependencies.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -19,7 +18,7 @@ At this moment, the performance is not intended to be competitive with the popul
 
 ### Why building another logging library in C++?
 
-There are MANY existing logging libraries in C++, but none met our requirements... so I believe this project deserves a justification. Its purposes are to be *simple* (few lines of code), *header-only* (trivial to use, just `#include "modlog.hpp"`), *macroless and built for C++23 modules* (just `import modlog;`), with both *component-level* and *global* logging and also *personalized output stream sinks*. It easily supports JSON, logfmt and nglog-like logging formats, and its already used by [OptFrame](https://github.com/optframe/optframe) project.
+There are MANY existing logging libraries in C++, but none met our requirements... so I believe this project deserves a justification. Its purposes are to be *simple* (few lines of code), *header-only* (trivial to use, just `#include "modlog.hpp"`), *macroless and built for C++23 modules* (just `import modlog;`), with both *component-level* and *global* logging and also *personalized output stream sinks*. It easily supports JSON, logfmt and nglog-like logging formats, and it's already used by [OptFrame](https://github.com/optframe/optframe) project.
 
 ### Features
 
