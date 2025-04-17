@@ -336,6 +336,9 @@ MODLOG_MOD_EXPORT inline std::ostream& Log(
     LogLevel sev = LogLevel::Info,
     // const std::source_location location = std::source_location::current()) {
     const my_source_location location = MY_SOURCE_LOCATION()) {
+#ifdef NDEBUG
+  if (sev < LogLevel::Info) return modlog_default.no;
+#endif
   return (sev < modlog_default.minlog)
              ? modlog_default.no
              : (modlog_default.prefix
@@ -353,6 +356,9 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
     int vlevel,
     // const std::source_location location = std::source_location::current()) {
     const my_source_location location = MY_SOURCE_LOCATION()) {
+#ifdef NDEBUG
+  if (vlevel > 0) return modlog_default.no;
+#endif
   return (LogLevel::Info < modlog_default.minlog) ||
                  (vlevel > modlog_default.vlevel)
              ? modlog_default.no
@@ -367,6 +373,8 @@ MODLOG_MOD_EXPORT inline std::ostream& VLog(
 // logs with object-specific configuration
 // =======================================
 
+/*
+// No "Default" logging for objects
 MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(
     LogObj* lo,
@@ -380,12 +388,16 @@ inline std::ostream& Log(
                                              location.line(), false)
                     : *lo->log().os);
 }
+*/
 
 MODLOG_MOD_EXPORT template <Loggable LogObj>
 inline std::ostream& Log(
     LogLevel sev, LogObj* lo,
     // const std::source_location location = std::source_location::current()) {
     const my_source_location location = MY_SOURCE_LOCATION()) {
+#ifdef NDEBUG
+  if (sev < LogLevel::Info) return modlog_default.no;
+#endif
   return (sev < lo->log().minlog)
              ? modlog_default.no
              : (lo->log().prefix ? modlog_default.fprefix(
