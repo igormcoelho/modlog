@@ -1,3 +1,4 @@
+import std;
 import modlog;
 
 auto main() -> int {

@@ -60,7 +60,7 @@ With Bazel Build, simply target this project with `git_override` in your `MODULE
 
 Log output indicates type `I|W|E|F`, then `yyyy-mm-dd`, then time, and finally the thread_id.
 
-## Demo 1 (C++20 without macros)
+## Demo 1 (C++17/C++20)
 
 See [demo/demo1.cpp](./demo/demo1.cpp):
 
@@ -112,6 +112,7 @@ This also shows how to print in JSON or some personalized logfmt log kind.
 See [demo/demo2.cpp](./demo/demo2.cpp):
 
 ```.cpp
+import std;
 import modlog;
 
 auto main() -> int {
@@ -221,7 +222,7 @@ E20250413 14:34:34.161991 128168691296064 demo3.cpp:8] Hello World! Again...
 I20250413 14:34:34.162023 128168691296064 demo3.cpp:11] Hello World! (this is INFO too)
 ```
 
-## Demo 4 (C++20 without macros)
+## Demo 4 (C++17/C++20 with component-level logging)
 
 Finally, an example shows how to change default ostream sink, and also reuse it as a semantic marker for printing.
 
