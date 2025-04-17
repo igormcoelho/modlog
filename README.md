@@ -29,6 +29,7 @@ There are MANY existing logging libraries in C++, but none met our requirements.
 - Optional macros for familiarity (nglog-style)
 - Supports verbosity levels and debug-only logs
 - Easily customizable streams and semantic tagging
+- Component-level Logging: easily configure logging separately for each module/component. Unlike most libraries, modlog makes this a first-class feature.
 
 ### Simple Installation
 - C++17/C++20: Copy [modlog.hpp](./include/modlog/modlog.hpp) into your project and `#include` it.
