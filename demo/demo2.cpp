@@ -2,15 +2,16 @@ import modlog;
 
 auto main() -> int {
   using namespace modlog;
+  using modlog::LogLevel::Debug;
   using modlog::LogLevel::Error;
   using modlog::LogLevel::Info;
   using modlog::LogLevel::Silent;
-  using modlog::LogLevel::Warning;
 
   Log(Info) << "Hello World!";
   Log(Error) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(Silent) << "Hello World! (does not appear...)";
+  Log(Silent) << "Hello World! (Silent: does not appear...)";
+  Log(Debug) << "Hello World! (Debug: does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)" << std::endl;
   VLog(1) << "Hello World! (this does not appear...)" << std::endl;
@@ -25,13 +26,17 @@ auto main() -> int {
   // ==================================
   // enable personalized logfmt logging
   // ==================================
+  using modlog::LogLevel::Warning;
+
   modlog::modlog_default.fprefixdata =
       [](std::ostream& os, LogLevel l, std::tm local_tm,
          std::chrono::microseconds us, std::uintptr_t tid,
          std::string_view short_file, int line, bool debug) -> std::ostream& {
     os << std::endl;  // always break line
     std::string slevel;
-    if (l == LogLevel::Info)
+    if (l == LogLevel::Debug)
+      slevel = "debug";
+    else if (l == LogLevel::Info)
       slevel = "info";
     else if (l == LogLevel::Warning)
       slevel = "warn";
@@ -51,6 +56,9 @@ auto main() -> int {
 
   Log(Info) << "Hello " << "World!";
   Log(Warning) << "Hello World!";
+  VLog(0) << "Hi Debug as Info!";
+  VLog(1) << "Hi Debug, again! (does not appear...)";
+  Log(Debug) << "Hi Debug, again! (does not appear...)";
 
   return 0;
 }

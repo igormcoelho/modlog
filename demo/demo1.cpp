@@ -3,6 +3,7 @@
 
 auto main() -> int {
   using namespace modlog;
+  using modlog::LogLevel::Debug;
   using modlog::LogLevel::Error;
   using modlog::LogLevel::Info;
   using modlog::LogLevel::Silent;
@@ -10,7 +11,8 @@ auto main() -> int {
   Log(Info) << "Hello World!";
   Log(Error) << "Hello World! Again...";
   Log() << "Hello World! (this is INFO)";
-  Log(Silent) << "Hello World! (does not appear...)";
+  Log(Silent) << "Hello World! (Silent: does not appear...)";
+  Log(Debug) << "Hello World! (Debug: does not appear...)";
 
   VLog(0) << "Hello World! (this is INFO too)" << std::endl;
   VLog(1) << "Hello World! (this does not appear...)" << std::endl;

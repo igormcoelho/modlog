@@ -16,16 +16,21 @@
 #endif
 
 #define LOG(LEVEL) LOG_##LEVEL
+//
 #define LOG_SILENT modlog::Log(modlog::LogLevel::Silent, MY_SRC_LOC_CURRENT)
+#define LOG_DEBUG modlog::Log(modlog::LogLevel::Debug, MY_SRC_LOC_CURRENT)
 #define LOG_INFO modlog::Log(modlog::LogLevel::Info, MY_SRC_LOC_CURRENT)
 #define LOG_WARNING modlog::Log(modlog::Warning, MY_SRC_LOC_CURRENT)
 #define LOG_ERROR modlog::Log(modlog::LogLevel::Error, MY_SRC_LOC_CURRENT)
 #define LOG_FATAL modlog::Log(modlog::LogLevel::Fatal, MY_SRC_LOC_CURRENT)
+//
 #define LOG_Silent modlog::Log(modlog::LogLevel::Silent, MY_SRC_LOC_CURRENT)
+#define LOG_Debug modlog::Log(modlog::LogLevel::Debug, MY_SRC_LOC_CURRENT)
 #define LOG_Info modlog::Log(modlog::LogLevel::Info, MY_SRC_LOC_CURRENT)
 #define LOG_Warning modlog::Log(modlog::Warning, MY_SRC_LOC_CURRENT)
 #define LOG_Error modlog::Log(modlog::LogLevel::Error, MY_SRC_LOC_CURRENT)
 #define LOG_Fatal modlog::Log(modlog::LogLevel::Fatal, MY_SRC_LOC_CURRENT)
+//
 #define VLOG(VLEVEL) modlog::VLog(VLEVEL, MY_SRC_LOC_CURRENT)
 
 #ifndef NDEBUG

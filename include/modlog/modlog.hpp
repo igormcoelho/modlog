@@ -99,7 +99,8 @@ MODLOG_MOD_EXPORT enum LogLevel {
 
 #if __cplusplus >= 202002L
 MODLOG_MOD_EXPORT enum class LogLevel : int {
-  Silent = -1,
+  Silent = -2,
+  Debug = -1,
   Info = 0,
   Warning = 1,
   Error = 2,
@@ -107,7 +108,8 @@ MODLOG_MOD_EXPORT enum class LogLevel : int {
 };
 #else
 MODLOG_MOD_EXPORT enum LogLevel : int {
-  Silent = -1,
+  Silent = -2,
+  Debug = -1,
   Info = 0,
   Warning = 1,
   Error = 2,
@@ -122,6 +124,7 @@ MODLOG_MOD_EXPORT enum LogLevel : int {
 // But... leaving UPPER CASE here for COMPATIBILITY purposes!
 #ifndef _WIN32
 MODLOG_MOD_EXPORT constexpr LogLevel SILENT = LogLevel::Silent;
+MODLOG_MOD_EXPORT constexpr LogLevel DEBUG = LogLevel::Debug;
 MODLOG_MOD_EXPORT constexpr LogLevel INFO = LogLevel::Info;
 MODLOG_MOD_EXPORT constexpr LogLevel WARNING = LogLevel::Warning;
 // ERROR is problematic on Windows
@@ -129,10 +132,11 @@ MODLOG_MOD_EXPORT constexpr LogLevel ERROR = LogLevel::Error;
 MODLOG_MOD_EXPORT constexpr LogLevel FATAL = LogLevel::Fatal;
 #else
 // Windows do not have upper case macros, so must use CamelCase ones
-MODLOG_MOD_EXPORT using modlog::LogLevel::Error;
-MODLOG_MOD_EXPORT using modlog::LogLevel::Info;
 MODLOG_MOD_EXPORT using modlog::LogLevel::Silent;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Debug;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Info;
 MODLOG_MOD_EXPORT using modlog::LogLevel::Warning;
+MODLOG_MOD_EXPORT using modlog::LogLevel::Error;
 MODLOG_MOD_EXPORT using modlog::LogLevel::Fatal;
 #endif
 
@@ -177,7 +181,9 @@ MODLOG_MOD_EXPORT inline std::ostream& default_prefix_data(
     uintptr_t tid, std::string_view short_file, int line, bool debug) {
   // TODO: check if locking is required for multi-threaded setups...
   char level = '?';
-  if (l == LogLevel::Info)
+  if (l == LogLevel::Debug)
+    level = 'D';
+  else if (l == LogLevel::Info)
     level = 'I';
   else if (l == LogLevel::Warning)
     level = 'W';
@@ -225,7 +231,9 @@ MODLOG_MOD_EXPORT inline std::ostream& json_prefix(
     uintptr_t tid, std::string_view short_file, int line, bool debug) {
   // TODO: check if locking is required for multi-threaded setups...
   std::string slevel;
-  if (l == LogLevel::Info)
+  if (l == LogLevel::Debug)
+    slevel = "debug";
+  else if (l == LogLevel::Info)
     slevel = "info";
   else if (l == LogLevel::Warning)
     slevel = "warn";
