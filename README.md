@@ -17,6 +17,10 @@ The intention is to keep it very easy to use and easy to install, requiring a **
 
 At this moment, the performance is not intended to be competitive with the popular pre-module alternatives (like spdlog and nglog), as the purpose of this project is to simply allow modern macro-less C++23 to be easily build with a beautiful and simple logging system.
 
+### Why building another logging library in C++?
+
+There are MANY existing logging libraries in C++, but none met our requirements... so I believe this project deserves a justification. Its purposes are to be *simple* (few lines of code), *header-only* (trivial to use, just `#include "modlog.hpp"`), *macroless and built for C++23 modules* (just `import modlog;`), with both *component-level* and *global* logging and also *personalized output stream sinks*. It easily supports JSON, logfmt and nglog-like logging formats, and its already used by [OptFrame](https://github.com/optframe/optframe) project.
+
 ### Features
 
 - Simple API: `Log(INFO) << "Message"`
