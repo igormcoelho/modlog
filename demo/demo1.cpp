@@ -24,5 +24,9 @@ auto main() -> int {
   // finish json!
   *modlog::modlog_default.os << "\"}";
 
+  modlog::modlog_default.minlog = modlog::LogLevel::Disabled;
+
+  Log(Error) << "does not appear!";
+
   return 0;
 }
