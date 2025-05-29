@@ -11,4 +11,11 @@ jobs:
     steps:
       - name: Print Hello World
         run: 'echo "Hello World"'
+      - name: Install ninja-build, bazelisk and local dependencies (Ubuntu)
+        run: |
+          sudo apt-get install ninja-build -y
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+          bash -i -c "nvm install --lts"
+          bash -i -c "sudo npm install -g @bazel/bazelisk"
+          bash -i -c "sudo apt install clang-19 clang-tools-19 libc++-19-dev"
 
