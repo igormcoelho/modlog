@@ -22,17 +22,8 @@ jobs:
           . "$NVM_DIR/nvm.sh"
           nvm install --lts
           nvm use --lts
-
-          # Now install bazelisk globally
           npm install -g @bazel/bazelisk
-
-          # Optionally verify everything is working
           node --version
           bazelisk version
-
-          echo "OK"
-
-          bash -i -c "nvm install --lts"
-          bash -i -c "sudo npm install -g @bazel/bazelisk"
-          bash -i -c "sudo apt install clang-19 clang-tools-19 libc++-19-dev"
+          sudo apt install clang-19 clang-tools-19 libc++-19-dev
 
