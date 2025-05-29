@@ -21,8 +21,5 @@ jobs:
             echo ::set-output name=uname::$(uname -a)
             echo "Hello World"
             apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends  build-essential
-            apt-get install curl ninja-build -y
-            apt-get install python3-pip -y
-            pip install cmake
             cd examples/modlog1 && make
             
