@@ -63,7 +63,7 @@ inline uintptr_t get_tid() {
   return static_cast<uintptr_t>(::GetCurrentThreadId());
 #else
   pthread_t tid = pthread_self();
-  if constexpr (std::is_pointer<pthread_t>::value)
+  if constexpr (!std::is_pointer<pthread_t>::value)
     return reinterpret_cast<uintptr_t>(tid);  // mac
   else
     return static_cast<uintptr_t>(tid);  // Linux, ARM
