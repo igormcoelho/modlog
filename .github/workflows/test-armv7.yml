@@ -1,0 +1,16 @@
+test-armv7:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm
+
+      - name: Build on armv7 (via Docker)
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/opt -w /opt \
+            multiarch/crossbuild:armv7-debian \
+            bash -c "apt-get update && apt-get install -y build-essential g++ make && make"
