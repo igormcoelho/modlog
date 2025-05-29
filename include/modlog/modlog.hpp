@@ -62,7 +62,11 @@ inline uintptr_t get_tid() {
 #ifdef _WIN32
   return static_cast<uintptr_t>(::GetCurrentThreadId());
 #else
-  return static_cast<uintptr_t>(pthread_self());
+  pthread_t tid = pthread_self();
+  if constexpr (std::is_integral<pthread_t>::value)
+    return static_cast<uintptr_t>(tid);  // linux ok, arm ok
+  else
+    return reinterpret_cast<uintptr_t>(tid);  // macos ok
 #endif
 }
 
