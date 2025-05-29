@@ -21,5 +21,7 @@ jobs:
             echo ::set-output name=uname::$(uname -a)
             echo "Hello World"
             apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends  build-essential
+            g++ examples/modlog1/main-cpp17.cpp --std=c++17 -I./include/ -o example_cpp17
             cd examples/modlog1 && ls -la && make
+
             
