@@ -1,8 +1,45 @@
-test-armv7:
-    runs-on: ubuntu-latest
+name: Demo on armv7, for windows, linux and macos
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release]
 
     steps:
       - uses: actions/checkout@v3
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Install ninja-build, bazelisk and local dependencies (Ubuntu)
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get install ninja-build -y
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+          bash -i -c "nvm install --lts"
+          bash -i -c "sudo npm install -g @bazel/bazelisk"
+          bash -i -c "sudo apt install clang-19 clang-tools-19 libc++-19-dev"
+      - name: Install ninja-build, bazel and local dependencies (macos)
+        if: contains(matrix.os, 'macos')
+        run: |
+          brew install ninja
+          brew install bazelisk
+      - name: Install bazel and local dependencies (windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          choco install bazel
+      - name: Install cmake with pipx (All)
+        run: |
+          pipx install cmake
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -14,3 +51,4 @@ test-armv7:
           docker run --rm -v ${{ github.workspace }}:/opt -w /opt \
             multiarch/crossbuild:armv7-debian \
             bash -c "apt-get update && apt-get install -y build-essential g++ make && make"
+            
