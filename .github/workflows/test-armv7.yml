@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  hello:
+  demo_arm:
     runs-on: ubuntu-24.04-arm
 
     steps:
@@ -27,3 +27,8 @@ jobs:
           bazelisk version
           sudo apt install clang-19 clang-tools-19 libc++-19-dev
 
+      - name: demo-project1 (bazel ubuntu)
+        if: contains(matrix.os, 'ubuntu')
+        shell: bash
+        run: |
+          bazel run //demo:demo1
