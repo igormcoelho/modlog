@@ -20,7 +20,7 @@ jobs:
             uname -a
             echo ::set-output name=uname::$(uname -a)
             echo "Hello World"
-            apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends  g++-15 gcc-15
+            apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends  build-essential g++-14 gcc-14
             apt-get install ninja-build -y
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
             
