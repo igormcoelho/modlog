@@ -63,10 +63,10 @@ inline uintptr_t get_tid() {
   return static_cast<uintptr_t>(::GetCurrentThreadId());
 #else
   pthread_t tid = pthread_self();
-  if constexpr (std::is_integral<pthread_t>::value)
-    return static_cast<uintptr_t>(tid);  // Linux/ARM: pthread_t is ulong
+  if constexpr (std::is_pointer<pthread_t>::value)
+    return reinterpret_cast<uintptr_t>(tid);  // mac
   else
-    return reinterpret_cast<uintptr_t>(tid);  // mac pthread_t is ptr type
+    return static_cast<uintptr_t>(tid);  // Linux, ARM
 
 #endif
 }
