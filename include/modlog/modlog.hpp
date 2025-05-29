@@ -62,7 +62,7 @@ inline uintptr_t get_tid() {
 #ifdef _WIN32
   return static_cast<uintptr_t>(::GetCurrentThreadId());
 #else
-  return reinterpret_cast<uintptr_t>(pthread_self());
+  return static_cast<uintptr_t>(pthread_self());
 #endif
 }
 
