@@ -20,4 +20,7 @@ jobs:
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
+            echo "Hello World"
+            sudo apt-get install ninja-build -y
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 
