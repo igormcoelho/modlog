@@ -64,9 +64,9 @@ inline uintptr_t get_tid() {
 #else
   pthread_t tid = pthread_self();
   if constexpr (std::is_integral<pthread_t>::value)
-    return static_cast<uintptr_t>(tid);  // linux ok, arm ok
-  else
     return reinterpret_cast<uintptr_t>(tid);  // macos ok
+  else
+    return static_cast<uintptr_t>(tid);  // linux ok, arm ok
 #endif
 }
 
