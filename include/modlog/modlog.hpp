@@ -63,7 +63,11 @@ inline uintptr_t get_tid() {
   return static_cast<uintptr_t>(::GetCurrentThreadId());
 #else
   pthread_t tid = pthread_self();
-  if constexpr (!std::is_pointer<pthread_t>::value)
+  // On ARM, pthread_t is 'long unsigned int', uintptr_t is 'unsigned int'
+  // On Mac, pthread_t is '_opaque_pthread_t *', uintptr_t is 'unsigned long'
+  // On linux, pthread_t is 'unsigned long', uintptr_t is 'unsigned long'
+
+  if constexpr (std::is_convertible<pthread_t, void*>::value)
     return reinterpret_cast<uintptr_t>(tid);  // mac
   else
     return static_cast<uintptr_t>(tid);  // Linux, ARM
