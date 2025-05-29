@@ -41,14 +41,16 @@ jobs:
         run: |
           pipx install cmake
 
-      - name: Set up QEMU
+
+      - name: Set up Docker QEMU
         uses: docker/setup-qemu-action@v3
         with:
           platforms: arm
 
-      - name: Build on armv7 (via Docker)
+      - name: Cross-compile with Docker for armv7
         run: |
           docker run --rm -v ${{ github.workspace }}:/opt -w /opt \
-            multiarch/crossbuild:armv7-debian \
+            --env TARGET_ARCH=armv7 \
+            multiarch/crossbuild \
             bash -c "apt-get update && apt-get install -y build-essential g++ make && make"
-            
+
