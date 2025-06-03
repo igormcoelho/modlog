@@ -38,7 +38,7 @@ jobs:
       run: |
         echo "compiling examples/modlog1"
         c++ examples/modlog1/main-cpp17.cpp --std=c++17 -I./include/ -o example_cpp17
-        echo "running examples/modlog1"
+        echo "running examples/modlog1 (example_cpp17)"
         ./example_cpp17
         cd examples/modlog1 && ls -la && make
 
@@ -46,7 +46,7 @@ jobs:
       run: |
         echo "compiling examples/modlog1"
         c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./include/ -o example_cpp20
-        echo "running examples/modlog1"
+        echo "running examples/modlog1 (example_cpp20)"
         ./example_cpp20
         cd examples/modlog1 && ls -la && make
 
@@ -55,9 +55,9 @@ jobs:
         echo "compiling examples/modlog1"
         mkdir fake_std
         echo "#pragma once" > fake_std/concepts
-        c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./fake_std/ -I./include/ -o example_cpp20
-        echo "running examples/modlog1"
-        ./example_cpp20
+        c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./fake_std/ -I./include/ -o example_cpp20_noconcepts
+        echo "running examples/modlog1 (example_cpp20_noconcepts)"
+        ./example_cpp20_noconcepts
         cd examples/modlog1 && ls -la && make
 
 
