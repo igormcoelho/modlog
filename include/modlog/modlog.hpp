@@ -310,14 +310,13 @@ MODLOG_MOD_EXPORT class LogConfig {
   FuncLogPrefix fprefixdata{default_prefix_data};
 
   std::string getFilename(std::string_view vpath) {
-#if defined(__APPLE__)
     std::string path{vpath};
     auto pos = path.find_last_of("/\\");
     if (pos != std::string::npos)
       return path.substr(pos + 1);
     else
       return path;
-#else
+#if 0
     return std::filesystem::path(vpath).filename().string();
 #endif
   }
