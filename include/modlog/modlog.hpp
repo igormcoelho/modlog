@@ -310,7 +310,7 @@ MODLOG_MOD_EXPORT class LogConfig {
 
   std::string getFilename(std::string_view vpath) {
 #if defined(__APPLE__)
-    std::string path = vpath;
+    std::string path{vpath};
     auto pos = path.find_last_of("/\\");
     if (pos != std::string::npos)
       return path.substr(pos + 1);
