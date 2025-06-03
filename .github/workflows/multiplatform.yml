@@ -106,9 +106,4 @@ jobs:
       shell: bash
       run: |
         cd tests && make
-    - name: make test (macos)
-      if: contains(matrix.os, 'macos')
-      shell: bash
-      run: |
-        cd tests && make
 
