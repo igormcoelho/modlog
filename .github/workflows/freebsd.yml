@@ -16,7 +16,7 @@ jobs:
           shell: sh
           run: |
             uname -a
-            pkg install -y curl
+            sudo pkg install -y curl
             echo "Hello World"
             echo "compiling examples/modlog1"
             c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./include/ -o example_cpp20
