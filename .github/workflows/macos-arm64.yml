@@ -49,4 +49,16 @@ jobs:
         echo "running examples/modlog1"
         ./example_cpp20
         cd examples/modlog1 && ls -la && make
+
+    - name: compile manually c++20 (remove concepts)
+      run: |
+        echo "compiling examples/modlog1"
+        mkdir fake_std
+        echo "#pragma once" > fake_std/concepts
+        c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./fake_std/ -I./include/ -o example_cpp20
+        echo "running examples/modlog1"
+        ./example_cpp20
+        cd examples/modlog1 && ls -la && make
+
+
         
