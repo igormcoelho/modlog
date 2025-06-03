@@ -28,6 +28,7 @@
 #define USE_STD_SRC_LOC 1
 #endif
 #include <string>
+#include <thread>  // for std::terminate
 
 #if __cplusplus >= 202002L && __has_include(<concepts>)
 #include <concepts>
