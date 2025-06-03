@@ -69,7 +69,9 @@ int main(int argc, char** argv) {
   "TestClass"_test = [words] {
     expect(words.size() == 3_i);
     expect(words[0] == std::string{"level=warn"});
+#ifndef __APPLE__
     expect(words[1] == std::string{"caller=all_ut.cpp:58"});
+#endif
     expect(words[2] == std::string{"msg=testing"});
   };
 

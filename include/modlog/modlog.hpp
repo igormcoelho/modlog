@@ -28,7 +28,6 @@
 #define USE_STD_SRC_LOC 1
 #endif
 #include <string>
-#include <thread>
 
 #if __cplusplus >= 202002L && __has_include(<concepts>)
 #include <concepts>
@@ -73,7 +72,8 @@ inline uintptr_t get_tid() {
 // On Mac, pthread_t is '_opaque_pthread_t *', uintptr_t is 'unsigned long'
 // On linux, pthread_t is 'unsigned long', uintptr_t is 'unsigned long'
 #if defined(__APPLE__) || defined(__FreeBSD__)
-  return reinterpret_cast<uintptr_t>(tid);  // mac and freebsd (but Linux ok too...)
+  return reinterpret_cast<uintptr_t>(
+      tid);  // mac and freebsd (but Linux ok too...)
 #elif defined(__arm__) || defined(__aarch64__)
   return static_cast<uintptr_t>(tid);  // ARM! (but Linux ok too...)
 #else
@@ -308,6 +308,19 @@ MODLOG_MOD_EXPORT class LogConfig {
       std::uintptr_t, std::string_view, int, bool)>;
   FuncLogPrefix fprefixdata{default_prefix_data};
 
+  std::string getFilename(std::string_view vpath) {
+#if defined(__APPLE__)
+    std::string path = vpath;
+    auto pos = path.find_last_of("/\\");
+    if (pos != std::string::npos)
+      return path.substr(pos + 1);
+    else
+      return path;
+#else
+    return std::filesystem::path(vpath).filename().string();
+#endif
+  }
+
   std::ostream& fprefix(std::ostream* os, LogLevel l, std::string_view path,
                         int line, bool debug) {
     // add line break before, since we cannot control what's done after...
@@ -320,8 +333,7 @@ MODLOG_MOD_EXPORT class LogConfig {
     auto us = duration_cast<microseconds>(now.time_since_epoch()) % 1'000'000;
     auto tid = get_tid();
     std::string short_file = "";
-    if (!path.empty())
-      short_file = std::filesystem::path(path).filename().string();
+    if (!path.empty()) short_file = getFilename(path);
 
     // =====================================
     // use personalized prefix data function
