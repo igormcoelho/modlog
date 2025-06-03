@@ -50,4 +50,14 @@ endif()
 add_executable(demo6 demo/demo6.cpp)
 target_link_libraries(demo6 PRIVATE modlog)
 
+# ============= begin testing =============
+
+Include(FetchContent)
+
+FetchContent_Declare(ut GIT_REPOSITORY https://github.com/boost-ext/ut.git GIT_TAG v2.3.1)
+FetchContent_MakeAvailable(ut)
+
+add_executable(all_ut_test tests/all_ut.cpp)
+target_link_libraries(all_ut_test PRIVATE modlog ut)
+
 

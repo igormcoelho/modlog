@@ -101,4 +101,14 @@ jobs:
       shell: cmd
       run: |
         bazel run //demo:demo6_windows
+    - name: make test (ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        cd tests && make
+    - name: make test (macos)
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        cd tests && make
 
