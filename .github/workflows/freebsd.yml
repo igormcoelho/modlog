@@ -1,0 +1,24 @@
+name: FreeBSD
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: test freebsd 13.4
+        uses: cross-platform-actions/action@v0.26.0
+        with:
+          memory: 512M
+          operating_system: freebsd
+          version: "13.4"
+          shell: sh
+          run: |
+            uname -a
+            pkg install -y curl
+            echo "Hello World"
+            echo "compiling examples/modlog1"
+            c++ examples/modlog1/main-cpp17.cpp --std=c++20 -I./include/ -o example_cpp20
+            echo "running examples/modlog1 (example_cpp20)"
+            ./example_cpp20
