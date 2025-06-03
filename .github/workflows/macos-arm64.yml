@@ -1,0 +1,37 @@
+name: Demo on macos arm64
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [macos-15]
+        build_type: [Release]
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Install ninja-build, bazel and local dependencies (macos)
+      if: contains(matrix.os, 'macos')
+      run: |
+        brew install ninja
+        brew install bazelisk
+    - name: Install cmake with pipx (All)
+      run: |
+        pipx install cmake
+    - name: demo-project1 (bazel macos)
+      if: contains(matrix.os, 'macos')
+      shell: bash
+      run: |
+        bazel run //demo:demo1
+      
+
