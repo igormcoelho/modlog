@@ -33,5 +33,12 @@ jobs:
       shell: bash
       run: |
         bazel run //demo:demo1
-      
-
+        
+    - name: compile manually 
+      run: |
+	echo "compiling examples/modlog1"
+	c++ examples/modlog1/main-cpp17.cpp --std=c++17 -I./include/ -o example_cpp17
+	echo "running examples/modlog1"
+	./example_cpp17
+        cd examples/modlog1 && ls -la && make
+        
