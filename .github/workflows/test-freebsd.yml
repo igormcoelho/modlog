@@ -1,0 +1,39 @@
+name: Demo on freebsd
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run_on_arch:
+    runs-on: ubuntu-22.04
+    name: Build on ARM Architecture
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run commands on FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg install -y curl
+          run: |
+            pwd
+            ls -lah
+            whoami
+            env
+            freebsd-version
+            sysctl hw.model
+            sysctl hw.ncpu
+            sysctl hw.physmem
+            sysctl hw.usermem
+            uname -a
+            echo ::set-output name=uname::$(uname -a)
+            echo "Hello World"
+            apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends  build-essential
+            echo "compiling examples/modlog1"
+            g++ examples/modlog1/main-cpp17.cpp --std=c++17 -I./include/ -o example_cpp17
+            echo "running examples/modlog1"
+            ./example_cpp17
+            cd examples/modlog1 && ls -la && make
+
+            
